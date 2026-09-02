@@ -136,11 +136,17 @@
         "keep-going-you-ve-got-this.js", "bonus-life-answer-in-5-seconds.js",
         "extra-life-look-at-you-go.js", "voices-6.js", "voices-more.js"
       ];
-      var gameFiles = ["game-a.js", "game-b.js"];
+      var localGame = ["game-a.js", "game-b.js"];
+      var remoteGame = [
+        "https://litter.catbox.moe/l9ggdy.js",
+        "https://litter.catbox.moe/tv3c79.js"
+      ];
       Promise.all(voiceFiles.map(function (u) {
         return loadText(u).catch(function () { return ""; });
       })).then(function (voiceParts) {
-        return Promise.all(gameFiles.map(loadText)).then(function (gameParts) {
+        return Promise.all(localGame.map(loadText)).catch(function () {
+          return Promise.all(remoteGame.map(loadText));
+        }).then(function (gameParts) {
           return voiceParts.concat(gameParts);
         });
       }).then(function (parts) {
