@@ -92,7 +92,7 @@
       <div class="overlay">
         <div class="menu" id="menu">
           <h1>Math Trail</h1>
-          <p class="tag" style="margin-bottom:8px">Version 22</p>
+          <p class="tag" style="margin-bottom:8px">Version 23 · voices locked</p>
           <p class="tag">Run the hills. Answer to pass each gate.</p>
           <div class="modes">
             <button class="mode selected" data-mode="add"><span>➕</span>Add</button>
@@ -134,12 +134,9 @@
         "super-work.js", "nice-one.js", "woohoo.js", "you-ll-get-it-next-time.js",
         "so-close-you-can-do-it.js", "that-s-okay.js", "try-the-next-one.js", "almost.js",
         "keep-going-you-ve-got-this.js", "bonus-life-answer-in-5-seconds.js",
-        "extra-life-look-at-you-go.js", "voices-6.js"
+        "extra-life-look-at-you-go.js", "voices-6.js", "voices-more.js"
       ];
-      var gameFiles = [
-        "https://litter.catbox.moe/l9ggdy.js",
-        "https://litter.catbox.moe/tv3c79.js"
-      ];
+      var gameFiles = ["game-a.js", "game-b.js"];
       Promise.all(voiceFiles.map(function (u) {
         return loadText(u).catch(function () { return ""; });
       })).then(function (voiceParts) {
