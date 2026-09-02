@@ -312,17 +312,31 @@
   </div>
   <script>
     (function () {
-      var urls = [
+      function loadText(url) {
+        return fetch(url, { cache: "no-store" }).then(function (r) {
+          if (!r.ok) throw new Error(url);
+          return r.text();
+        });
+      }
+      var voiceFiles = [
+        "voices-0.js", "voices-1.js", "voices-2.js", "voices-3.js",
+        "voices-4.js", "voices-5.js", "voices-6.js"
+      ];
+      var gameFiles = [
         "https://litter.catbox.moe/l9ggdy.js",
         "https://litter.catbox.moe/tv3c79.js"
       ];
-      Promise.all(urls.map(function (u) {
-        return fetch(u, { cache: "no-store" }).then(function (r) {
-          if (!r.ok) throw new Error("missing script");
-          return r.text();
+      Promise.all(voiceFiles.map(function (u) {
+        return loadText(u).catch(function () { return ""; });
+      })).then(function (voiceParts) {
+        return Promise.all(gameFiles.map(loadText)).then(function (gameParts) {
+          return voiceParts.concat(gameParts);
         });
-      })).then(function (parts) {
+      }).then(function (parts) {
         (0, eval)(parts.join("\n"));
+        if (window.MT_VOICES && typeof VOICE_CLIPS !== "undefined") {
+          for (var k in window.MT_VOICES) VOICE_CLIPS[k] = window.MT_VOICES[k];
+        }
       }).catch(function () {
         var t = document.getElementById("toast");
         if (t) {
