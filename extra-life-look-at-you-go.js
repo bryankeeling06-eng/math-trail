@@ -1,2 +1,4 @@
 window.MT_VOICES=window.MT_VOICES||{};
-window.MT_VOICES["Extra life! Look at you go!"]="PLACEHOLDER";
+if (window.MT_VOICES["Look at you go!"]) {
+  window.MT_VOICES["Extra life! Look at you go!"] = window.MT_VOICES["Look at you go!"];
+}
