@@ -279,7 +279,7 @@
       <div class="overlay">
         <div class="menu" id="menu">
           <h1>Math Trail</h1>
-          <p class="tag" style="margin-bottom:8px">Version 22 · admin split</p>
+          <p class="tag" style="margin-bottom:8px">Version 22</p>
           <p class="tag">Run the hills. Answer to pass each gate.</p>
           <div class="modes">
             <button class="mode selected" data-mode="add"><span>➕</span>Add</button>
@@ -310,7 +310,27 @@
       </div>
     </div>
   </div>
-  <script src="https://litter.catbox.moe/l9ggdy.js"></script>
-  <script src="https://litter.catbox.moe/tv3c79.js"></script>
+  <script>
+    (function () {
+      var urls = [
+        "https://litter.catbox.moe/l9ggdy.js",
+        "https://litter.catbox.moe/tv3c79.js"
+      ];
+      Promise.all(urls.map(function (u) {
+        return fetch(u, { cache: "no-store" }).then(function (r) {
+          if (!r.ok) throw new Error("missing script");
+          return r.text();
+        });
+      })).then(function (parts) {
+        (0, eval)(parts.join("\n"));
+      }).catch(function () {
+        var t = document.getElementById("toast");
+        if (t) {
+          t.textContent = "Game code did not load. Refresh.";
+          t.classList.add("show");
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
