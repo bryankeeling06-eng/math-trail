@@ -1,0 +1,25 @@
+name: Import game scripts
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/import-game.yml"
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download scripts
+        run: |
+          curl -L --fail -o game-a.js https://litter.catbox.moe/l9ggdy.js
+          curl -L --fail -o game-b.js https://litter.catbox.moe/tv3c79.js
+          wc -c game-a.js game-b.js
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add game-a.js game-b.js
+          git diff --cached --quiet || git commit -m "Add Math Trail game scripts"
+          git push
