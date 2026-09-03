@@ -323,13 +323,41 @@
         oldDrawBuddy(bx, gy - hop);
       };
 
+      function throwConfetti() {
+        var w = (typeof viewW === "function") ? viewW() : 800;
+        var h = (typeof viewH === "function") ? viewH() : 500;
+        var colors = ["#f4c430", "#ff6b6b", "#4ecdc4", "#ffe66d", "#a29bfe", "#fd79a8", "#55efc4"];
+        for (var i = 0; i < 42; i++) {
+          state.particles.push({
+            x: w * Math.random(),
+            y: -10 - Math.random() * 80,
+            vx: (Math.random() - 0.5) * 160,
+            vy: 40 + Math.random() * 180,
+            life: 1.2 + Math.random() * 0.8,
+            color: colors[i % colors.length],
+            r: 3 + Math.random() * 5
+          });
+        }
+        if (typeof burst === "function") {
+          burst(w * 0.5, h * 0.28, "#f4c430");
+          burst(w * 0.3, h * 0.22, "#ff6b6b");
+          burst(w * 0.7, h * 0.22, "#4ecdc4");
+        }
+      }
+
       if (typeof arriveAtNextPlace === "function") {
         var oldArrive = arriveAtNextPlace;
         arriveAtNextPlace = function() {
           oldArrive();
-          state.arriveFlash = 2.4;
+          state.arriveFlash = 2.8;
+          state.arriving = 2.8;
+          state.dancing = true;
+          state.holdSpeed = state.speed;
+          state.speed = 0;
+          state.confettiT = 0;
           var toastEl = document.getElementById("toast");
           if (toastEl) toastEl.classList.remove("show");
+          throwConfetti();
         };
       }
 
@@ -337,6 +365,16 @@
       tickTrail = function(dt) {
         if (state.buddyHop > 0) state.buddyHop -= dt;
         if (state.arriveFlash > 0) state.arriveFlash -= dt;
+        if (state.arriveFlash > 0) {
+          state.dancing = true;
+          state.speed = 0;
+          state.confettiT = (state.confettiT || 0) + dt;
+          if (state.confettiT > 0.35) { state.confettiT = 0; throwConfetti(); }
+        } else if (state.holdSpeed != null) {
+          state.speed = state.holdSpeed;
+          state.holdSpeed = null;
+          state.dancing = false;
+        }
         var pb = document.getElementById("problemBanner");
         var pn = document.getElementById("levelChip");
         if (pb) pb.style.visibility = (state.arriveFlash > 0.25) ? "hidden" : "";
