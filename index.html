@@ -216,7 +216,9 @@
             return loadText("game-c.js").catch(function () { return ""; }).then(function (c) {
               return loadText("game-d.js").catch(function () { return ""; }).then(function (d) {
                 return loadText("game-e.js").catch(function () { return ""; }).then(function (e) {
-                  return [a, b, c, d, e];
+                  return loadText("game-f.js").catch(function () { return ""; }).then(function (f) {
+                    return [a, b, c, d, e, f];
+                  });
                 });
               });
             });
