@@ -161,7 +161,8 @@
       loadText("game-d.js").catch(function () { return ""; }),
       loadText("game-e.js").catch(function () { return ""; }),
       loadText("game-f.js").catch(function () { return ""; }),
-      loadText("shop-patch.js").catch(function () { return ""; })
+      loadText("shop-patch.js").catch(function () { return ""; }),
+      loadText("props-fix.js").catch(function () { return ""; })
     ]).then(function (parts) {
       (0, eval)(parts.map(clean).join("\n"));
     }).catch(function () {
