@@ -1,4 +1,33 @@
     (function attachShipDome() {
+      if (typeof ctx !== "undefined" && ctx && ctx.arc) {
+        var rawArc = ctx.arc.bind(ctx);
+        ctx.arc = function(x, y, r, a0, a1, ccw) {
+          rawArc(x, y, Math.max(0.2, Math.abs(Number(r)) || 0.2), a0, a1, ccw);
+        };
+      }
+      function forceStart() {
+        var tp = document.getElementById("turnPhone");
+        if (tp) tp.style.display = "none";
+        try {
+          if (typeof startGame === "function") startGame(false);
+          else {
+            state.screen = "play";
+            document.getElementById("menu").classList.add("hidden");
+          }
+        } catch (err) {
+          console.error(err);
+          state.screen = "play";
+          var menuEl = document.getElementById("menu");
+          if (menuEl) menuEl.classList.add("hidden");
+        }
+      }
+      var startBtn = document.getElementById("startBtn");
+      if (startBtn) startBtn.addEventListener("click", forceStart);
+      var turn = document.getElementById("turnPhone");
+      if (turn) {
+        turn.style.cursor = "pointer";
+        turn.addEventListener("click", forceStart);
+      }
       if (typeof drawBuddy !== "function") return;
       var prev = drawBuddy;
       drawBuddy = function(x, gy) {
