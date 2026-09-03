@@ -11,15 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Download scripts
+      - name: Restore scripts from last good commit
         run: |
-          curl -L --fail -o game-a.js https://litter.catbox.moe/l9ggdy.js
-          curl -L --fail -o game-b.js https://litter.catbox.moe/tv3c79.js
+          curl -L --fail -o game-a.js https://raw.githubusercontent.com/bryankeeling06-eng/math-trail/85bc333e9cd9851547ed682b1aae7b6156e1c1f7/game-a.js
+          curl -L --fail -o game-b.js "https://raw.githubusercontent.com/bryankeeling06-eng/math-trail/85bc333e9cd9851547ed682b1aae7b6156e1c1f7/game-b%20(1).js"
           wc -c game-a.js game-b.js
       - name: Commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add game-a.js game-b.js
-          git diff --cached --quiet || git commit -m "Add Math Trail game scripts"
+          git diff --cached --quiet || git commit -m "Restore Math Trail game scripts"
           git push
