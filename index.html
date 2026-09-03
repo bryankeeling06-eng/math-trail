@@ -16,10 +16,13 @@
     canvas { display:block; width:100%; height:100%; }
     .overlay { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; pointer-events:none; }
     .overlay > * { pointer-events:auto; }
-    .hud { position:absolute; top:12px; left:12px; right:12px; display:flex; justify-content:space-between; align-items:flex-start; gap:10px; pointer-events:none; }
+    .hud { position:absolute; top:12px; left:12px; right:12px; display:flex; justify-content:space-between; align-items:flex-start; gap:8px; pointer-events:none; flex-wrap:wrap; }
     .chip { background:var(--panel); border-radius:16px; padding:8px 14px; box-shadow:var(--shadow); font-weight:700; font-size:18px; }
     .hearts { letter-spacing:2px; font-size:22px; }
-    .problem-banner { position:absolute; top:72px; left:50%; transform:translateX(-50%); background:var(--panel); border-radius:20px; padding:10px 28px; font-family:"Nunito",sans-serif; font-weight:900; font-size:clamp(28px,6vw,48px); box-shadow:var(--shadow); min-width:180px; text-align:center; pointer-events:none; opacity:0; transition:opacity 0.2s ease; }
+    .stones { display:flex; align-items:center; gap:6px; padding:8px 12px; }
+    .stone { width:14px; height:14px; border-radius:50%; background:#d5e0ea; box-shadow:inset 0 -2px 0 rgba(0,0,0,0.12); }
+    .stone.on { background:#f4c430; box-shadow:0 0 0 3px rgba(244,196,48,0.28); }
+    .problem-banner { position:absolute; top:78px; left:50%; transform:translateX(-50%); background:var(--panel); border-radius:20px; padding:10px 28px; font-family:"Nunito",sans-serif; font-weight:900; font-size:clamp(28px,6vw,48px); box-shadow:var(--shadow); min-width:180px; text-align:center; pointer-events:none; opacity:0; transition:opacity 0.2s ease; }
     .problem-banner.show { opacity:1; }
     .answers { position:absolute; bottom:18px; left:50%; transform:translateX(-50%); display:none; gap:14px; width:min(640px, calc(100% - 24px)); justify-content:center; }
     .answers.show { display:flex; }
@@ -59,7 +62,8 @@
     .pauseMask > div { background:var(--panel); border-radius:24px; padding:22px 22px 18px; width:min(340px,86%); text-align:center; box-shadow:var(--shadow); }
     .hidden { display:none !important; }
     .muted { font-size:13px; opacity:0.65; margin-top:10px; }
-    @media (max-height:560px) { .ans { height:58px; font-size:26px; } .problem-banner { top:58px; font-size:28px; padding:6px 18px; } }
+    .stamps { margin:8px 0 14px; font-size:15px; font-weight:700; line-height:1.4; }
+    @media (max-height:560px) { .ans { height:58px; font-size:26px; } .problem-banner { top:64px; font-size:28px; padding:6px 18px; } }
   </style>
 </head>
 <body>
@@ -69,7 +73,8 @@
       <div class="hud">
         <div class="chip hearts" id="hearts">❤ ❤ ❤</div>
         <div class="chip" id="scoreChip">⭐ 0</div>
-        <div class="chip" id="levelChip">Level 1</div>
+        <div class="chip stones" id="stoneChip" aria-label="Path stones"><span class="stone"></span><span class="stone"></span><span class="stone"></span><span class="stone"></span><span class="stone"></span></div>
+        <div class="chip" id="levelChip">Sunny Hills</div>
         <div class="ctrls">
           <button type="button" class="ctrl" id="pauseBtn" aria-label="Pause">⏸</button>
           <button type="button" class="ctrl" id="muteBtn" aria-label="Mute">🔊</button>
@@ -92,8 +97,9 @@
       <div class="overlay">
         <div class="menu" id="menu">
           <h1>Math Trail</h1>
-          <p class="tag" style="margin-bottom:8px">Version 23 · voices locked</p>
+          <p class="tag" style="margin-bottom:8px">Version 24 · trail places</p>
           <p class="tag">Run the hills. Answer to pass each gate.</p>
+          <p class="tag" id="runGoal" style="margin-top:-8px;font-weight:800;opacity:1">Next stop: Picnic Spot</p>
           <div class="modes">
             <button class="mode selected" data-mode="add"><span>➕</span>Add</button>
             <button class="mode" data-mode="sub"><span>➖</span>Subtract</button>
@@ -103,7 +109,7 @@
           <button class="go hidden" id="continueBtn" style="margin-top:10px;background:linear-gradient(#5aa0e6,#2b6cb0);box-shadow:0 6px 0 #1e4e86;">Continue saved trail</button>
           <button class="shopBtn" id="shopOpen">Costume Shop</button>
           <p class="tag" id="starBank" style="margin:12px 0 0">⭐ Saved stars: 0</p>
-          <div class="how">A gate rolls toward you with a math problem. Tap the correct answer (or press 1, 2, or 3) before you reach it. There is plenty of time to think. All numbers stay 0–9. Every 5 right answers, the facts get a little trickier.</div>
+          <div class="how">A gate rolls toward you with a math problem. Tap the correct answer (or press 1, 2, or 3) before you reach it. There is plenty of time to think. All numbers stay 0–9. Fill 5 stones to reach the next place on the trail.</div>
           <div class="muted">Made for ages 5–6 · 3 lives · unhurried pace</div>
         </div>
         <div class="shop hidden" id="shop">
@@ -116,6 +122,8 @@
           <h1 id="endTitle">Nice run!</h1>
           <p class="tag" id="endStats">You solved 0 problems.</p>
           <p class="tag" id="endStars">⭐ Stars kept: 0</p>
+          <p class="stamps" id="endStamps">Play again to collect trail stamps.</p>
+          <p class="tag" style="margin-top:0">Show a grown-up your costume and stamps!</p>
           <button class="again" id="againBtn">Play again</button>
         </div>
       </div>
