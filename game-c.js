@@ -323,19 +323,19 @@
         var flap = Math.sin(state.t * 8) * 6;
         function wing(side) {
           ctx.save();
-          ctx.translate(x, y - 46 + bob);
+          ctx.translate(x - 2, y - 34 + bob);
           ctx.scale(side, 1);
           ctx.rotate(-0.08 + flap * 0.01);
           ctx.fillStyle = "#8f3a1c";
           ctx.beginPath();
-          ctx.moveTo(6, 6);
+          ctx.moveTo(0, 10);
           ctx.quadraticCurveTo(16, -36, 24, -56);
           ctx.quadraticCurveTo(32, -50, 38, -22);
           ctx.quadraticCurveTo(48, 2, 50, 22);
           ctx.quadraticCurveTo(40, 10, 36, 28);
           ctx.quadraticCurveTo(28, 12, 24, 30);
           ctx.quadraticCurveTo(16, 12, 12, 26);
-          ctx.quadraticCurveTo(10, 12, 6, 8);
+          ctx.quadraticCurveTo(4, 14, 0, 12);
           ctx.closePath();
           ctx.fill();
           ctx.fillStyle = "#c45a2a";
@@ -359,15 +359,15 @@
           ctx.lineWidth = 2.4;
           ctx.lineCap = "round";
           ctx.beginPath();
-          ctx.moveTo(6, 6);
+          ctx.moveTo(0, 10);
           ctx.quadraticCurveTo(16, -36, 24, -56);
-          ctx.moveTo(6, 6);
+          ctx.moveTo(0, 10);
           ctx.quadraticCurveTo(22, -8, 38, -22);
-          ctx.moveTo(6, 6);
+          ctx.moveTo(0, 10);
           ctx.quadraticCurveTo(24, 4, 50, 22);
-          ctx.moveTo(6, 6);
+          ctx.moveTo(0, 10);
           ctx.lineTo(36, 28);
-          ctx.moveTo(6, 6);
+          ctx.moveTo(0, 10);
           ctx.lineTo(24, 30);
           ctx.stroke();
           ctx.fillStyle = "#5c1e10";
@@ -383,23 +383,24 @@
         wing(1);
       }
 
+      var rawCostume = costume;
+      costume = function() {
+        var c = rawCostume();
+        if (c.id === "dragon") c.acc = "none";
+        return c;
+      };
+
       var rawDrawHero = drawHero;
       drawHero = function(x, gy) {
-        var c = (typeof costume === "function") ? costume() : null;
+        var c = rawCostume();
         var dragon = c && c.id === "dragon";
         var dx = x, dy = gy;
         if (state.arriveFlash > 0 || state.dancing) {
           dy = gy - Math.abs(Math.sin(state.t * 10)) * 26;
           dx = x + Math.sin(state.t * 11) * 20;
         }
-        if (dragon) {
-          c.acc = "none";
-          drawBatWings(dx, dy);
-          rawDrawHero(dx, dy);
-          c.acc = "wings";
-        } else {
-          rawDrawHero(dx, dy);
-        }
+        if (dragon) drawBatWings(dx, dy);
+        rawDrawHero(dx, dy);
       };
 
       var oldDrawBuddy = drawBuddy;
