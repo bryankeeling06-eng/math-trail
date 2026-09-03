@@ -108,8 +108,6 @@
       function dressScarecrow(w, h, gy, scroll) {
         var span = w + 280;
         var x = ((760 - scroll * 0.55) % span + span) % span - 80;
-        ctx.fillStyle = "#7a9a3a";
-        ctx.fillRect(x - 72, gy - 140, 144, 118);
         ctx.fillStyle = "#8b5a2b";
         ctx.fillRect(x - 4, gy - 100, 8, 100);
         ctx.fillStyle = "#c45a2a";
@@ -209,6 +207,23 @@
           var b = state.biome || 0;
           if (b === 5) dressScarecrow(w, h, gy, scroll);
           if (b === 7) dressSnowman(w, h, gy, scroll);
+        };
+      }
+
+      if (typeof drawHero === "function") {
+        var innerHero = drawHero;
+        drawHero = function(x, gy) {
+          var sway = (state.arriveFlash > 0 || state.dancing) ? Math.sin(state.t * 11) * 20 : 0;
+          var visX = (x + sway) * 2;
+          var rawEll = ctx.ellipse;
+          ctx.ellipse = function(ex, ey, rx, ry, rot, a0, a1) {
+            if (Math.abs(rx - 26) < 1.5 && Math.abs(ry - 8) < 1.5) {
+              return rawEll.call(ctx, visX, gy + 16, rx, ry, rot, a0, a1);
+            }
+            return rawEll.apply(ctx, arguments);
+          };
+          innerHero(x, gy);
+          ctx.ellipse = rawEll;
         };
       }
 
