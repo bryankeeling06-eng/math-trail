@@ -1,105 +1,97 @@
-    (function scenePolish() {
-      function treeX(t, scroll) {
-        var span = viewW() + 240;
-        return ((t.x - scroll * 0.55) % span + span) % span - 60;
+    (function wearTheSuit() {
+      function on() {
+        return !!(state.suited || state.biome === 9 || (state.launching && state.launch > 1.35));
       }
-
-      function lollipop(t, scroll, gy) {
-        var x = treeX(t, scroll);
-        var y = gy + 8;
-        var h = t.h || 90;
-        var colors = ["#ff4d8d", "#7c4dff", "#ffd93d", "#2ecc71", "#ff6b6b", "#54a0ff"];
-        var col = colors[(t.kind || 0) % colors.length];
-        var col2 = colors[((t.kind || 0) + 2) % colors.length];
-        ctx.fillStyle = "#fff8e7";
-        ctx.fillRect(x - 4, y - h * 0.58, 8, h * 0.58);
-        ctx.fillStyle = "#ff8ab8";
-        for (var i = 0; i < 5; i++) ctx.fillRect(x - 4, y - h * 0.55 + i * 12, 8, 5);
-        if ((t.kind || 0) % 2 === 0) {
-          ctx.fillStyle = col;
-          ctx.beginPath();
-          ctx.arc(x, y - h * 0.66, 20 + h * 0.04, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.strokeStyle = "#fff";
-          ctx.lineWidth = 5;
-          ctx.beginPath();
-          ctx.arc(x, y - h * 0.66, 12, 0, Math.PI * 2);
-          ctx.stroke();
-          ctx.strokeStyle = col2;
-          ctx.lineWidth = 3;
-          ctx.beginPath();
-          ctx.arc(x, y - h * 0.66, 6, 0, Math.PI * 2);
-          ctx.stroke();
-        } else {
-          ctx.fillStyle = col;
-          ctx.beginPath();
-          ctx.ellipse(x, y - h * 0.64, 16, 20, 0.15, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = col2;
-          ctx.beginPath();
-          ctx.ellipse(x, y - h * 0.64, 9, 12, 0.15, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = "#fff8e7";
-          ctx.beginPath();
-          ctx.moveTo(x - 8, y - h * 0.82);
-          ctx.lineTo(x, y - h * 0.9);
-          ctx.lineTo(x + 8, y - h * 0.82);
-          ctx.closePath();
-          ctx.fill();
-          ctx.beginPath();
-          ctx.moveTo(x - 8, y - h * 0.46);
-          ctx.lineTo(x, y - h * 0.38);
-          ctx.lineTo(x + 8, y - h * 0.46);
-          ctx.closePath();
-          ctx.fill();
-        }
-      }
-
-      function snowCap(t, scroll, gy) {
-        var x = treeX(t, scroll);
-        var y = gy + 8;
-        var r = 22 + (t.h || 90) * 0.08;
-        ctx.fillStyle = "#ffffff";
-        ctx.beginPath();
-        ctx.ellipse(x, y - t.h * 0.55 - r * 0.45, r * 0.85, r * 0.38, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.ellipse(x - 16, y - t.h * 0.42 - 10, 14, 7, -0.2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.ellipse(x + 16, y - t.h * 0.42 - 10, 14, 7, 0.2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(x - 6, y - t.h * 0.7, 8, 0, Math.PI * 2);
-        ctx.arc(x + 8, y - t.h * 0.68, 7, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      if (typeof drawTree === "function") {
-        drawTree = function(t, scroll, gy) {
-          var b = state.biome || 0;
-          if (b === 6) { lollipop(t, scroll, gy); return; }
-          var span = viewW() + 240;
-          var x = ((t.x - scroll * 0.55) % span + span) % span - 60;
-          var y = gy + 8;
-          ctx.fillStyle = "#7a4a22";
-          ctx.fillRect(x - 6, y - t.h * 0.45, 12, t.h * 0.45);
-          ctx.fillStyle = t.kind === 0 ? "#2e8b3a" : t.kind === 1 ? "#3aa34a" : "#1f7a32";
-          ctx.beginPath();
-          ctx.arc(x, y - t.h * 0.55, 22 + t.h * 0.08, 0, Math.PI * 2);
-          ctx.arc(x - 16, y - t.h * 0.42, 16, 0, Math.PI * 2);
-          ctx.arc(x + 16, y - t.h * 0.42, 16, 0, Math.PI * 2);
-          ctx.fill();
-          if (b === 7) snowCap(t, scroll, gy);
+      if (typeof costume === "function") {
+        var rawC = costume;
+        costume = function() {
+          var c = rawC();
+          if (on() || state.wearSuit) {
+            c.body = "#e8eef8";
+            c.belly = "#b7c4d6";
+            c.acc = "none";
+          }
+          return c;
         };
       }
-
-      if (typeof drawLandmark === "function") {
-        var rawLand = drawLandmark;
-        drawLandmark = function(w, h, gy, scroll) {
-          var b = state.biome || 0;
-          if (b === 0) return;
-          rawLand(w, h, gy, scroll);
+      function visX(x) {
+        var sway = (state.arriveFlash > 0 || state.dancing) && !state.launching ? Math.sin(state.t * 11) * 20 : 0;
+        return (x + sway) * 2;
+      }
+      function drawPack(px, gy, blast) {
+        var y = gy + (state.heroY || 0);
+        if (blast) {
+          ctx.fillStyle = "#ff7a2e";
+          ctx.beginPath();
+          ctx.moveTo(px - 24, y - 30);
+          ctx.lineTo(px - 18, y - 6 + Math.random() * 10);
+          ctx.lineTo(px - 12, y - 30);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(px + 12, y - 30);
+          ctx.lineTo(px + 18, y - 6 + Math.random() * 10);
+          ctx.lineTo(px + 24, y - 30);
+          ctx.fill();
+        }
+        ctx.fillStyle = "#7d8798";
+        ctx.fillRect(px - 28, y - 64, 12, 30);
+        ctx.fillRect(px + 16, y - 64, 12, 30);
+        ctx.fillStyle = "#c5cedd";
+        ctx.fillRect(px - 26, y - 60, 8, 22);
+        ctx.fillRect(px + 18, y - 60, 8, 22);
+      }
+      function drawHelm(px, gy) {
+        var y = gy + (state.heroY || 0);
+        ctx.strokeStyle = "#9aa6b8";
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.ellipse(px, y - 80, 17, 19, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fillStyle = "rgba(90,190,235,0.32)";
+        ctx.beginPath();
+        ctx.ellipse(px + 3, y - 80, 10, 12, 0.08, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      if (typeof drawHero === "function") {
+        var inner = drawHero;
+        drawHero = function(x, gy) {
+          var keepSuit = state.suited;
+          var keepJet = state.hasJet;
+          var keepBio = state.biome;
+          var keepLaunch = state.launching;
+          var keepBlast = state.blasting;
+          state.wearSuit = !!(keepSuit || keepBio === 9 || (keepLaunch && state.launch > 1.35));
+          state.suited = false;
+          state.hasJet = false;
+          state.blasting = false;
+          if (keepBio === 9) state.biome = 8;
+          state.launching = false;
+          var px = visX(x);
+          var blast = !!(keepBlast || (keepLaunch && state.launch > 3.4));
+          if (keepJet || keepBio === 9 || (keepLaunch && state.launch > 2.55)) drawPack(px, gy, blast);
+          inner(x, gy);
+          state.suited = keepSuit;
+          state.hasJet = keepJet;
+          state.biome = keepBio;
+          state.launching = keepLaunch;
+          state.blasting = keepBlast;
+          if (keepLaunch && state.launch < 1.4) {
+            ctx.fillStyle = "#eef3ff";
+            ctx.beginPath();
+            ctx.ellipse(px, state.suitY || -40, 16, 18, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "rgba(80,180,230,0.4)";
+            ctx.beginPath();
+            ctx.ellipse(px + 3, state.suitY || -40, 9, 11, 0, 0, Math.PI * 2);
+            ctx.fill();
+          } else if (on()) {
+            drawHelm(px, gy);
+          }
+          if (keepLaunch && state.launch >= 1.4 && state.launch < 2.6) {
+            ctx.fillStyle = "#8b95a8";
+            ctx.fillRect(px - 22, (state.jetY || -80) - 10, 12, 26);
+            ctx.fillRect(px + 10, (state.jetY || -80) - 10, 12, 26);
+          }
         };
       }
     })();
