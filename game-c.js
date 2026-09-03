@@ -315,15 +315,91 @@
         return Math.max(72, bx);
       };
 
+      function drawBatWings(x, gy) {
+        var duck = state.sliding ? 16 : 0;
+        var y = gy + (state.heroY || 0) - 8 + duck;
+        var idle = (state.screen === "menu" || state.screen === "end");
+        var bob = Math.sin(state.runPhase * 2) * (state.grounded ? 3 : 0) + (idle ? Math.sin(state.t * 2) * 2 : 0);
+        var flap = Math.sin(state.t * 8) * 6;
+        function wing(side) {
+          ctx.save();
+          ctx.translate(x, y - 46 + bob);
+          ctx.scale(side, 1);
+          ctx.rotate(-0.08 + flap * 0.01);
+          ctx.fillStyle = "#8f3a1c";
+          ctx.beginPath();
+          ctx.moveTo(6, 6);
+          ctx.quadraticCurveTo(16, -36, 24, -56);
+          ctx.quadraticCurveTo(32, -50, 38, -22);
+          ctx.quadraticCurveTo(48, 2, 50, 22);
+          ctx.quadraticCurveTo(40, 10, 36, 28);
+          ctx.quadraticCurveTo(28, 12, 24, 30);
+          ctx.quadraticCurveTo(16, 12, 12, 26);
+          ctx.quadraticCurveTo(10, 12, 6, 8);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillStyle = "#c45a2a";
+          ctx.beginPath();
+          ctx.moveTo(10, 8);
+          ctx.quadraticCurveTo(20, -28, 26, -46);
+          ctx.quadraticCurveTo(30, -20, 36, 4);
+          ctx.quadraticCurveTo(34, 16, 18, 14);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillStyle = "#a84a22";
+          ctx.beginPath();
+          ctx.moveTo(12, 16);
+          ctx.quadraticCurveTo(28, 8, 44, 18);
+          ctx.quadraticCurveTo(36, 8, 32, 22);
+          ctx.quadraticCurveTo(24, 10, 20, 22);
+          ctx.quadraticCurveTo(16, 10, 12, 16);
+          ctx.closePath();
+          ctx.fill();
+          ctx.strokeStyle = "#5c1e10";
+          ctx.lineWidth = 2.4;
+          ctx.lineCap = "round";
+          ctx.beginPath();
+          ctx.moveTo(6, 6);
+          ctx.quadraticCurveTo(16, -36, 24, -56);
+          ctx.moveTo(6, 6);
+          ctx.quadraticCurveTo(22, -8, 38, -22);
+          ctx.moveTo(6, 6);
+          ctx.quadraticCurveTo(24, 4, 50, 22);
+          ctx.moveTo(6, 6);
+          ctx.lineTo(36, 28);
+          ctx.moveTo(6, 6);
+          ctx.lineTo(24, 30);
+          ctx.stroke();
+          ctx.fillStyle = "#5c1e10";
+          ctx.beginPath();
+          ctx.moveTo(22, -56);
+          ctx.lineTo(26, -50);
+          ctx.lineTo(24, -44);
+          ctx.closePath();
+          ctx.fill();
+          ctx.restore();
+        }
+        wing(-1);
+        wing(1);
+      }
+
       var rawDrawHero = drawHero;
       drawHero = function(x, gy) {
+        var c = (typeof costume === "function") ? costume() : null;
+        var dragon = c && c.id === "dragon";
+        var dx = x, dy = gy;
         if (state.arriveFlash > 0 || state.dancing) {
-          var bounce = Math.abs(Math.sin(state.t * 10)) * 26;
-          var sway = Math.sin(state.t * 11) * 20;
-          rawDrawHero(x + sway, gy - bounce);
-          return;
+          dy = gy - Math.abs(Math.sin(state.t * 10)) * 26;
+          dx = x + Math.sin(state.t * 11) * 20;
         }
-        rawDrawHero(x, gy);
+        if (dragon) {
+          c.acc = "none";
+          drawBatWings(dx, dy);
+          rawDrawHero(dx, dy);
+          c.acc = "wings";
+        } else {
+          rawDrawHero(dx, dy);
+        }
       };
 
       var oldDrawBuddy = drawBuddy;
