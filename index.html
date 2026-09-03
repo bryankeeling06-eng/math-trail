@@ -2,63 +2,154 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Math Trail</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#0e2a3a" />
+  <title>Math Trail — Kids Math Runner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
   <style>
-    html,body{margin:0;height:100%;overflow:hidden;font-family:sans-serif;background:#0e2a3a;color:#1b2a41}
-    #wrap{display:flex;align-items:center;justify-content:center;height:100%}
-    #stage{position:relative;width:min(1100px,100vw);height:min(720px,100vh);background:#7ec8ff;border-radius:18px;overflow:hidden}
-    canvas{display:block;width:100%;height:100%}
-    .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
-    .overlay>*{pointer-events:auto}
-    .menu,.endcard,.shop{background:#fff;padding:24px;border-radius:24px;width:min(420px,90%);text-align:center}
-    .go,.again,.shopBtn{width:100%;border:0;background:#2fa84a;color:#fff;font-size:22px;padding:12px;border-radius:14px;cursor:pointer;margin-top:8px}
-    .shopBtn{background:#ff8a3c}
-    .hidden{display:none!important}
-    .hud{position:absolute;top:10px;left:10px;right:10px;display:flex;gap:8px}
-    .answers{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:none;gap:10px}
-    .answers.show{display:flex}
-    .ans{width:90px;height:56px;font-size:24px}
-    .problem-banner{position:absolute;top:70px;left:50%;transform:translateX(-50%);background:#fff;padding:8px 20px;border-radius:16px;opacity:0}
-    .problem-banner.show{opacity:1}
+    :root { --ink:#1b2a41; --panel:rgba(255,255,255,0.92); --shadow:0 10px 24px rgba(20,40,70,0.18); }
+    * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html, body { margin:0; height:100%; overflow:hidden; font-family:"Fredoka","Nunito",system-ui,sans-serif; background:#0e2a3a; color:var(--ink); user-select:none; }
+    #wrap { position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
+    #stage { position:relative; width:min(1100px,100dvw,100vw); height:min(720px,100dvh,100vh); background:#7ec8ff; overflow:hidden; box-shadow:0 0 0 6px #16324a, var(--shadow); border-radius:18px; }
+    .turnPhone { display:none; position:absolute; inset:0; z-index:30; background:#0e2a3a; color:#fff8e7; align-items:center; justify-content:center; text-align:center; padding:28px; font-weight:800; font-size:26px; }
+    @media (orientation: portrait) and (max-width: 900px) {
+      #stage { width:100dvw; height:100dvh; border-radius:0; box-shadow:none; }
+      .turnPhone { display:flex; flex-direction:column; }
+    }
+    canvas { display:block; width:100%; height:100%; }
+    .overlay { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; pointer-events:none; }
+    .overlay > * { pointer-events:auto; }
+    .hud { position:absolute; top:12px; left:12px; right:12px; display:flex; justify-content:space-between; align-items:flex-start; gap:8px; pointer-events:none; flex-wrap:wrap; }
+    .chip { background:var(--panel); border-radius:16px; padding:10px 16px; box-shadow:var(--shadow); font-weight:800; font-size:22px; }
+    .hearts { letter-spacing:3px; font-size:28px; }
+    .stones { display:flex; align-items:center; gap:6px; padding:10px 14px; }
+    .stone { width:16px; height:16px; border-radius:50%; background:#d5e0ea; box-shadow:inset 0 -2px 0 rgba(0,0,0,0.12); }
+    .stone.on { background:#f4c430; box-shadow:0 0 0 3px rgba(244,196,48,0.28); }
+    .place-name { position:absolute; top:160px; left:50%; transform:translateX(-50%); background:var(--panel); border-radius:16px; padding:8px 18px; box-shadow:var(--shadow); font-weight:800; font-size:20px; pointer-events:none; white-space:nowrap; }
+    .problem-banner { position:absolute; top:78px; left:50%; transform:translateX(-50%); background:var(--panel); border-radius:20px; padding:12px 32px; font-family:"Nunito",sans-serif; font-weight:900; font-size:clamp(32px,6.4vw,52px); box-shadow:var(--shadow); min-width:200px; text-align:center; pointer-events:none; opacity:0; }
+    .problem-banner.show { opacity:1; }
+    .answers { position:absolute; bottom:18px; left:50%; transform:translateX(-50%); display:none; gap:14px; width:min(640px, calc(100% - 24px)); justify-content:center; }
+    .answers.show { display:flex; }
+    .ans { flex:1; max-width:180px; height:76px; border:none; border-radius:18px; font-family:"Nunito",sans-serif; font-weight:900; font-size:34px; color:#16324a; background:#fff; box-shadow:0 6px 0 #c9d6e4, var(--shadow); cursor:pointer; }
+    .ans:active { transform:translateY(4px); box-shadow:0 2px 0 #c9d6e4; }
+    .ans.correct-flash { background:#b8f5c8; }
+    .ans.wrong-flash { background:#ffc9c4; }
+    .menu, .endcard { background:var(--panel); border-radius:28px; padding:28px; width:min(460px,92%); text-align:center; box-shadow:var(--shadow); }
+    h1 { margin:0 0 6px; font-size:clamp(34px,7vw,52px); }
+    .tag { margin:0 0 18px; font-size:16px; opacity:0.8; }
+    .modes { display:flex; gap:8px; margin:8px 0 18px; }
+    .mode { flex:1; border:3px solid transparent; background:#eef6ff; border-radius:16px; padding:12px 4px; cursor:pointer; font-family:inherit; font-weight:700; font-size:15px; }
+    .mode.selected { border-color:#2b6cb0; background:#d6ecff; }
+    .mode span { display:block; font-size:28px; margin-bottom:4px; }
+    .go, .again { width:100%; border:none; background:linear-gradient(#59d36a,#2fa84a); color:white; font-family:inherit; font-weight:800; font-size:24px; padding:14px; border-radius:16px; cursor:pointer; box-shadow:0 6px 0 #1e7a32; }
+    .how { margin-top:14px; font-size:14px; line-height:1.45; opacity:0.78; text-align:left; }
+    .toast { position:absolute; top:46%; left:50%; transform:translate(-50%,-50%); background:#fff7d1; color:#7a4b00; font-weight:800; font-size:28px; padding:10px 22px; border-radius:16px; opacity:0; pointer-events:none; }
+    .toast.show { opacity:1; }
+    .shopBtn { width:100%; margin-top:10px; border:none; background:linear-gradient(#ffb347,#ff8a3c); color:white; font-family:inherit; font-weight:800; font-size:22px; padding:12px; border-radius:16px; cursor:pointer; }
+    .shop { background:var(--panel); border-radius:28px; padding:18px; width:min(520px,94%); text-align:center; box-shadow:var(--shadow); }
+    .shopGrid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0; }
+    .backBtn { width:100%; border:none; background:#eef6ff; color:#16324a; font-family:inherit; font-weight:800; font-size:18px; padding:12px; border-radius:14px; cursor:pointer; }
+    .ctrls { display:flex; gap:8px; pointer-events:auto; }
+    .ctrl { width:46px; height:42px; border:none; border-radius:14px; background:var(--panel); box-shadow:var(--shadow); font-size:20px; cursor:pointer; }
+    .pauseMask { position:absolute; inset:0; background:rgba(20,40,70,0.45); display:flex; align-items:center; justify-content:center; z-index:8; }
+    .pauseMask > div { background:var(--panel); border-radius:24px; padding:22px; width:min(340px,86%); text-align:center; }
+    .hidden { display:none !important; }
+    .muted { font-size:13px; opacity:0.65; margin-top:10px; }
+    .stamps { margin:8px 0 14px; font-size:15px; font-weight:700; }
   </style>
 </head>
 <body>
-<div id="wrap"><div id="stage">
-<canvas id="game"></canvas>
-<div class="hud">
-  <div id="hearts">hearts</div><div id="scoreChip">0</div><div id="stoneChip"></div>
-  <button id="fullBtn">FS</button><button id="pauseBtn">P</button><button id="muteBtn">M</button>
-</div>
-<div id="pauseMask" class="hidden"><button class="go" id="resumeBtn">Resume</button></div>
-<div class="problem-banner" id="problemBanner"></div>
-<div id="levelChip"></div><div id="toast"></div>
-<div class="answers" id="answers"><button class="ans" data-i="0">0</button><button class="ans" data-i="1">0</button><button class="ans" data-i="2">0</button></div>
-<div class="overlay">
-  <div class="menu" id="menu">
-    <h1>Math Trail</h1>
-    <button class="mode selected" data-mode="add">Add</button>
-    <button class="mode" data-mode="sub">Sub</button>
-    <button class="mode" data-mode="mix">Mix</button>
-    <button class="go" id="startBtn">Start Trail</button>
-    <button class="go hidden" id="continueBtn">Continue</button>
-    <button class="shopBtn" id="shopOpen">Shop</button>
-    <div id="starBank"></div><div id="runGoal"></div>
+  <div id="wrap">
+    <div id="stage">
+      <canvas id="game"></canvas>
+      <div class="turnPhone" id="turnPhone"><span style="font-size:54px">📱</span>Turn your phone sideways to run the trail</div>
+      <div class="hud">
+        <div class="chip hearts" id="hearts">❤ ❤ ❤</div>
+        <div class="chip" id="scoreChip">⭐ 0</div>
+        <div class="chip stones" id="stoneChip"><span class="stone"></span><span class="stone"></span><span class="stone"></span><span class="stone"></span><span class="stone"></span></div>
+        <div class="ctrls">
+          <button type="button" class="ctrl" id="fullBtn">⛶</button>
+          <button type="button" class="ctrl" id="pauseBtn">⏸</button>
+          <button type="button" class="ctrl" id="muteBtn">🔊</button>
+        </div>
+      </div>
+      <div class="pauseMask hidden" id="pauseMask">
+        <div>
+          <h1>Paused</h1>
+          <p class="tag">Tap resume when you are ready.</p>
+          <button class="go" id="resumeBtn">Resume</button>
+        </div>
+      </div>
+      <div class="problem-banner" id="problemBanner">3 + 4</div>
+      <div class="place-name" id="levelChip">Sunny Hills</div>
+      <div class="toast" id="toast">Level up!</div>
+      <div class="answers" id="answers">
+        <button class="ans" data-i="0">0</button>
+        <button class="ans" data-i="1">0</button>
+        <button class="ans" data-i="2">0</button>
+      </div>
+      <div class="overlay">
+        <div class="menu" id="menu">
+          <h1>Math Trail</h1>
+          <p class="tag">Run the hills. Answer to pass each gate.</p>
+          <p class="tag" id="runGoal" style="margin-top:-8px;font-weight:800;opacity:1">Next stop: Picnic Spot</p>
+          <div class="modes">
+            <button class="mode selected" data-mode="add"><span>➕</span>Add</button>
+            <button class="mode" data-mode="sub"><span>➖</span>Subtract</button>
+            <button class="mode" data-mode="mix"><span>➕➖</span>Mixed</button>
+          </div>
+          <button class="go" id="startBtn">Start Trail</button>
+          <button class="go hidden" id="continueBtn" style="margin-top:10px;background:linear-gradient(#5aa0e6,#2b6cb0);">Continue saved trail</button>
+          <button class="shopBtn" id="shopOpen">Costume Shop</button>
+          <p class="tag" id="starBank" style="margin:12px 0 0">⭐ Saved stars: 0</p>
+          <div class="how">A gate rolls toward you with a math problem. Tap the correct answer (or press 1, 2, or 3) before you reach it.</div>
+          <div class="muted">Made for ages 5–6 · 3 lives · unhurried pace</div>
+        </div>
+        <div class="shop hidden" id="shop">
+          <h1 style="font-size:32px">Costume Shop</h1>
+          <p class="tag" id="shopStars">⭐ 0 stars</p>
+          <div class="shopGrid" id="shopGrid"></div>
+          <button class="backBtn" id="shopBack">Back</button>
+        </div>
+        <div class="endcard hidden" id="endcard">
+          <h1 id="endTitle">Nice run!</h1>
+          <p class="tag" id="endStats">You solved 0 problems.</p>
+          <p class="tag" id="endStars">⭐ Stars kept: 0</p>
+          <p class="stamps" id="endStamps">Play again to collect trail stamps.</p>
+          <button class="again" id="againBtn">Play again</button>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="shop hidden" id="shop"><div id="shopStars"></div><div id="shopGrid"></div><button id="shopBack">Back</button></div>
-  <div class="endcard hidden" id="endcard"><h1 id="endTitle"></h1><p id="endStats"></p><p id="endStars"></p><p id="endStamps"></p><button class="again" id="againBtn">Play again</button></div>
-</div>
-</div></div>
-<script>
-function loadText(url){return fetch(url,{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error(url);return r.text();});}
-function clean(t){if(!t)return "";var s=String(t).trim();if(s==="see local"||s.charAt(0)==="<")return "";return t;}
-Promise.all([
-  loadText("game-a.js"),
-  loadText("game-b.js").catch(function(){return loadText("game-b (1).js");}),
-  loadText("game-c.js").catch(function(){return "";}),
-  loadText("game-d.js").catch(function(){return "";}),
-  loadText("game-e.js").catch(function(){return "";}),
-  loadText("game-f.js").catch(function(){return "";})
-]).then(function(parts){(0,eval)(parts.map(clean).join("\n"));}).catch(function(e){console.error(e);});
-</script>
-</body></html>
+  <script>
+    function loadText(url) {
+      return fetch(url, { cache: "no-store" }).then(function (r) {
+        if (!r.ok) throw new Error(url);
+        return r.text();
+      });
+    }
+    function clean(t) {
+      if (!t) return "";
+      var s = String(t).trim();
+      if (s === "see local" || s.charAt(0) === "<") return "";
+      return t;
+    }
+    Promise.all([
+      loadText("game-a.js"),
+      loadText("game-b.js").catch(function () { return loadText("game-b (1).js"); }),
+      loadText("game-c.js").catch(function () { return ""; }),
+      loadText("game-d.js").catch(function () { return ""; }),
+      loadText("game-e.js").catch(function () { return ""; }),
+      loadText("game-f.js").catch(function () { return ""; })
+    ]).then(function (parts) {
+      (0, eval)(parts.map(clean).join("\n"));
+    }).catch(function () {
+      var t = document.getElementById("toast");
+      if (t) { t.textContent = "Game code did not load. Refresh."; t.classList.add("show"); }
+    });
+  </script>
+</body>
+</html>
