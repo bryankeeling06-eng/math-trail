@@ -239,21 +239,23 @@
         if (!(state.arriveFlash > 0)) return;
         var a = Math.min(1, state.arriveFlash / 0.4);
         if (state.arriveFlash < 0.5) a = state.arriveFlash / 0.5;
+        var boxH = 96;
+        var y = Math.round(h * 0.5 - boxH / 2);
         ctx.save();
         ctx.globalAlpha = Math.max(0, Math.min(1, a));
-        ctx.fillStyle = "rgba(20, 40, 28, 0.55)";
-        ctx.fillRect(w * 0.18, 72, w * 0.64, 86);
+        ctx.fillStyle = "rgba(20, 40, 28, 0.62)";
+        ctx.fillRect(w * 0.16, y, w * 0.68, boxH);
         ctx.strokeStyle = "#f4c430";
         ctx.lineWidth = 4;
-        ctx.strokeRect(w * 0.18, 72, w * 0.64, 86);
+        ctx.strokeRect(w * 0.16, y, w * 0.68, boxH);
         ctx.fillStyle = "#fff8e7";
         ctx.font = "700 28px Nunito, sans-serif";
         ctx.textAlign = "center";
         var place = (typeof currentPlace === "function" && currentPlace()) ? currentPlace() : { name: "New place", arrive: "You made it!" };
-        ctx.fillText(place.arrive || ("Welcome to " + place.name), w / 2, 112);
+        ctx.fillText(place.arrive || ("Welcome to " + place.name), w / 2, y + 42);
         ctx.font = "700 16px Nunito, sans-serif";
         ctx.fillStyle = "#f4c430";
-        ctx.fillText("Stamp: " + place.name, w / 2, 140);
+        ctx.fillText("Stamp: " + place.name, w / 2, y + 72);
         ctx.restore();
       }
 
