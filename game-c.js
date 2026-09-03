@@ -1,6 +1,10 @@
     (function trailPlayFix() {
       var SMALL = { slide: 1, dance: 1, highfive: 1 };
       if (state.buddyX == null) state.buddyX = 112;
+      function homeX() {
+        var w = (typeof viewW === "function") ? viewW() : 800;
+        return Math.max(64, Math.min(170, w * 0.2));
+      }
 
       function duck(dx, dy, flip) {
         ctx.save();
@@ -337,7 +341,10 @@
         var pn = document.getElementById("levelChip");
         if (pb) pb.style.visibility = (state.arriveFlash > 0.25) ? "hidden" : "";
         if (pn) pn.style.visibility = (state.arriveFlash > 0.25) ? "hidden" : "";
-        var home = (state.heroX || 180) - 68;
+        var hx = homeX();
+        if (!state.answered && !state.rushing) state.heroX = hx;
+        state.heroX = Math.min(state.heroX || hx, Math.max(hx + 30, viewW() * 0.42));
+        var home = (state.heroX || hx) - Math.min(68, hx * 0.45);
         if (state.buddyRush && state.gate && !state.gate.smashed) {
           state.buddyX = (state.buddyX || home) + 420 * dt;
           if (state.buddyX >= state.gate.x - 36) {
@@ -351,6 +358,9 @@
           if (state.gate && !state.gate.smashed) state.buddyX = Math.min(state.buddyX, state.gate.x - 110);
         }
         oldTick(dt);
+        var keep = homeX();
+        if (!state.answered && !state.rushing) state.heroX = keep;
+        state.heroX = Math.min(state.heroX || keep, viewW() * 0.46);
         if (state.answered && state.rushing && state.gate && !state.gate.smashed && !state.didJump) {
           jump();
         }
