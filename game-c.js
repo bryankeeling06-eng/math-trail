@@ -1,4 +1,12 @@
     (function trailPlayFix() {
+      if (typeof PLACES !== "undefined" && PLACES.length === 6) {
+        PLACES[4].goal = "Pumpkin Patch";
+        PLACES.splice(5, 0,
+          { id: "pumpkin", name: "Pumpkin Patch", goal: "Candy Trail", arrive: "Pumpkins everywhere!" },
+          { id: "candy", name: "Candy Trail", goal: "Snowy Hill", arrive: "Sweet candy trail!" },
+          { id: "snow", name: "Snowy Hill", goal: "Firefly Night", arrive: "Snow day!" }
+        );
+      }
       var SMALL = { slide: 1, dance: 1, highfive: 1 };
       if (state.buddyX == null) state.buddyX = 112;
       function homeX() {
@@ -263,10 +271,148 @@
         ctx.restore();
       }
 
+      var rawTheme = biomeTheme;
+      biomeTheme = function() {
+        var b = state.biome || 0;
+        if (b === 5) return { sky0: "#f4a25a", sky1: "#ffd08a", sky2: "#f3e0a8", sun: "#ffcf66", hillA: "#c4b05a", hillB: "#9a8a3a", grass: "#7a9a3a", grassTop: "#c4d46a", dirt: "#6b3a18", night: false };
+        if (b === 6) return { sky0: "#ff9ad2", sky1: "#ffd0f0", sky2: "#ffe8c8", sun: "#ff8ab8", hillA: "#ff9ac8", hillB: "#f07ab0", grass: "#f48cc0", grassTop: "#ffb6d8", dirt: "#c45a8a", night: false };
+        if (b === 7) return { sky0: "#c8e4ff", sky1: "#eef7ff", sky2: "#d8ecff", sun: "#fff6d0", hillA: "#d8e8f4", hillB: "#c0d4e4", grass: "#eef6ff", grassTop: "#ffffff", dirt: "#9ab0c4", night: false };
+        if (b === 8) {
+          var keep = state.biome;
+          state.biome = 5;
+          var th = rawTheme();
+          state.biome = keep;
+          return th;
+        }
+        return rawTheme();
+      };
+
+      function drawPumpkinPatch(w, h, gy, scroll) {
+        var x = worldX(w, scroll, 760);
+        ctx.fillStyle = "#8b5a2b";
+        ctx.fillRect(x - 8, gy - 78, 10, 78);
+        ctx.fillStyle = "#c9843a";
+        ctx.beginPath();
+        ctx.moveTo(x - 28, gy - 78);
+        ctx.lineTo(x - 3, gy - 58);
+        ctx.lineTo(x + 22, gy - 78);
+        ctx.lineTo(x + 22, gy - 52);
+        ctx.lineTo(x - 28, gy - 52);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = "#ffe0bd";
+        ctx.beginPath();
+        ctx.arc(x - 3, gy - 92, 14, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#5d3a1a";
+        ctx.fillRect(x - 18, gy - 100, 8, 6);
+        ctx.fillRect(x + 4, gy - 100, 8, 6);
+        ctx.beginPath();
+        ctx.arc(x - 8, gy - 94, 1.6, 0, Math.PI * 2);
+        ctx.arc(x + 2, gy - 94, 1.6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "#5d3a1a";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(x - 3, gy - 88, 4, 0.15, Math.PI - 0.15);
+        ctx.stroke();
+        function pumpkin(px, py, s) {
+          ctx.fillStyle = "#e67e22";
+          ctx.beginPath();
+          ctx.ellipse(px, py, 16 * s, 12 * s, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "#d35400";
+          ctx.beginPath();
+          ctx.ellipse(px - 7 * s, py, 8 * s, 11 * s, 0, 0, Math.PI * 2);
+          ctx.ellipse(px + 7 * s, py, 8 * s, 11 * s, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "#2e8b3a";
+          ctx.fillRect(px - 2, py - 16 * s, 3, 7 * s);
+        }
+        pumpkin(x - 36, gy - 8, 1);
+        pumpkin(x + 28, gy - 6, 0.85);
+        pumpkin(x + 52, gy - 4, 0.7);
+      }
+
+      function drawCandyTrail(w, h, gy, scroll) {
+        var x = worldX(w, scroll, 740);
+        ctx.fillStyle = "#ff4d8d";
+        ctx.fillRect(x - 6, gy - 92, 8, 92);
+        ctx.fillStyle = "#fff";
+        for (var i = 0; i < 6; i++) ctx.fillRect(x - 6, gy - 88 + i * 14, 8, 6);
+        ctx.fillStyle = "#ff4d8d";
+        ctx.beginPath();
+        ctx.arc(x - 2, gy - 118, 26, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.arc(x - 2, gy - 118, 16, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fillStyle = "#7c4dff";
+        ctx.beginPath();
+        ctx.arc(x + 40, gy - 18, 12, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#2ecc71";
+        ctx.beginPath();
+        ctx.arc(x + 62, gy - 12, 9, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#ffd93d";
+        ctx.beginPath();
+        ctx.arc(x - 40, gy - 14, 10, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      function drawSnowHill(w, h, gy, scroll) {
+        ctx.fillStyle = "rgba(255,255,255,0.55)";
+        ctx.fillRect(0, gy - 8, w, 18);
+        var x = worldX(w, scroll, 700);
+        ctx.fillStyle = "#fff";
+        ctx.beginPath();
+        ctx.arc(x, gy - 16, 18, 0, Math.PI * 2);
+        ctx.arc(x, gy - 40, 14, 0, Math.PI * 2);
+        ctx.arc(x, gy - 60, 10, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#1b2a41";
+        ctx.beginPath();
+        ctx.arc(x - 4, gy - 62, 1.5, 0, Math.PI * 2);
+        ctx.arc(x + 4, gy - 62, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#e67e22";
+        ctx.beginPath();
+        ctx.moveTo(x, gy - 58);
+        ctx.lineTo(x + 12, gy - 56);
+        ctx.lineTo(x, gy - 54);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = "#8b5a2b";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(x - 12, gy - 40);
+        ctx.lineTo(x - 26, gy - 50);
+        ctx.moveTo(x + 12, gy - 40);
+        ctx.lineTo(x + 26, gy - 48);
+        ctx.stroke();
+        ctx.fillStyle = "#2e6a44";
+        ctx.beginPath();
+        ctx.moveTo(x + 70, gy);
+        ctx.lineTo(x + 86, gy - 54);
+        ctx.lineTo(x + 102, gy);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = "#fff";
+        ctx.beginPath();
+        ctx.moveTo(x + 74, gy - 40);
+        ctx.lineTo(x + 86, gy - 58);
+        ctx.lineTo(x + 98, gy - 40);
+        ctx.closePath();
+        ctx.fill();
+      }
+
       var oldLandmark = drawLandmark;
       drawLandmark = function(w, h, gy, scroll) {
         var b = state.biome || 0;
-        if (b === 1 || b === 2 || b === 3 || b === 4) return;
+        if (b === 1 || b === 2 || b === 3 || b === 4 || b === 5 || b === 6 || b === 7) return;
         oldLandmark(w, h, gy, scroll);
       };
 
@@ -278,7 +424,10 @@
         if (b === 2) drawBetterPond(w, h, gy, scroll);
         if (b === 3) drawBetterTreehouse(w, h, gy, scroll);
         if (b === 4) drawBarn(w, h, gy, scroll);
-        if (b === 5) drawNight(w, h, gy, scroll);
+        if (b === 5) drawPumpkinPatch(w, h, gy, scroll);
+        if (b === 6) drawCandyTrail(w, h, gy, scroll);
+        if (b === 7) drawSnowHill(w, h, gy, scroll);
+        if (b === 8) drawNight(w, h, gy, scroll);
         drawArrival(w, h);
       };
 
