@@ -49,8 +49,21 @@
     .toast { position:absolute; top:46%; left:50%; transform:translate(-50%,-50%); background:#fff7d1; color:#7a4b00; font-weight:800; font-size:28px; padding:10px 22px; border-radius:16px; opacity:0; pointer-events:none; }
     .toast.show { opacity:1; }
     .shopBtn { width:100%; margin-top:10px; border:none; background:linear-gradient(#ffb347,#ff8a3c); color:white; font-family:inherit; font-weight:800; font-size:22px; padding:12px; border-radius:16px; cursor:pointer; }
-    .shop { background:var(--panel); border-radius:28px; padding:18px; width:min(520px,94%); text-align:center; box-shadow:var(--shadow); }
-    .shopGrid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0; }
+    .shop { background:var(--panel); border-radius:28px; padding:18px; width:min(520px,94%); text-align:center; box-shadow:var(--shadow); max-height:86%; overflow:auto; }
+    .shopTabs { display:flex; gap:8px; margin:8px 0 4px; }
+    .shopTab { flex:1; border:3px solid transparent; background:#eef6ff; border-radius:14px; padding:8px 4px; cursor:pointer; font-family:inherit; font-weight:800; font-size:15px; }
+    .shopTab.selected { border-color:#ff8a3c; background:#ffe8d2; }
+    .shopGrid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0; max-height:46vh; overflow:auto; }
+    .item { border:3px solid #d7e6f5; background:#fff; border-radius:16px; padding:10px 8px 12px; cursor:pointer; font-family:inherit; }
+    .item.owned { border-color:#9ad0a8; }
+    .item.wearing { border-color:#ff8a3c; background:#fff4ea; }
+    .item.locked { opacity:0.55; }
+    .item .emo { font-size:28px; }
+    .item .nm { font-weight:800; font-size:16px; }
+    .item .pr { font-size:13px; opacity:0.75; margin-top:2px; }
+    .swatches { display:flex; flex-wrap:wrap; gap:4px; justify-content:center; margin-top:8px; }
+    .swatch { width:16px; height:16px; border:none; border-radius:50%; cursor:pointer; box-shadow:0 0 0 2px #fff, 0 0 0 3px #c9d6e4; padding:0; }
+    .swatch.on { box-shadow:0 0 0 2px #fff, 0 0 0 3px #ff8a3c; }
     .backBtn { width:100%; border:none; background:#eef6ff; color:#16324a; font-family:inherit; font-weight:800; font-size:18px; padding:12px; border-radius:14px; cursor:pointer; }
     .ctrls { display:flex; gap:8px; pointer-events:auto; }
     .ctrl { width:46px; height:42px; border:none; border-radius:14px; background:var(--panel); box-shadow:var(--shadow); font-size:20px; cursor:pointer; }
@@ -73,7 +86,7 @@
         <div class="ctrls">
           <button type="button" class="ctrl" id="fullBtn">⛶</button>
           <button type="button" class="ctrl" id="pauseBtn">⏸</button>
-          <button type="button" class="ctrl" id="muteBtn">🔊</button>
+          <button type="button" class="ctrl" id="muteBtn">🗣</button>
         </div>
       </div>
       <div class="pauseMask hidden" id="pauseMask">
@@ -103,14 +116,18 @@
           </div>
           <button class="go" id="startBtn">Start Trail</button>
           <button class="go hidden" id="continueBtn" style="margin-top:10px;background:linear-gradient(#5aa0e6,#2b6cb0);">Continue saved trail</button>
-          <button class="shopBtn" id="shopOpen">Costume Shop</button>
+          <button class="shopBtn" id="shopOpen">Trail Shop</button>
           <p class="tag" id="starBank" style="margin:12px 0 0">⭐ Saved stars: 0</p>
           <div class="how">A gate rolls toward you with a math problem. Tap the correct answer (or press 1, 2, or 3) before you reach it.</div>
           <div class="muted">Made for ages 5–6 · 3 lives · unhurried pace</div>
         </div>
         <div class="shop hidden" id="shop">
-          <h1 style="font-size:32px">Costume Shop</h1>
+          <h1 style="font-size:32px">Trail Shop</h1>
           <p class="tag" id="shopStars">⭐ 0 stars</p>
+          <div class="shopTabs">
+            <button type="button" class="shopTab selected" data-tab="crew">Crew</button>
+            <button type="button" class="shopTab" data-tab="hats">Hats</button>
+          </div>
           <div class="shopGrid" id="shopGrid"></div>
           <button class="backBtn" id="shopBack">Back</button>
         </div>
@@ -143,7 +160,8 @@
       loadText("game-c.js").catch(function () { return ""; }),
       loadText("game-d.js").catch(function () { return ""; }),
       loadText("game-e.js").catch(function () { return ""; }),
-      loadText("game-f.js").catch(function () { return ""; })
+      loadText("game-f.js").catch(function () { return ""; }),
+      loadText("shop-patch.js").catch(function () { return ""; })
     ]).then(function (parts) {
       (0, eval)(parts.map(clean).join("\n"));
     }).catch(function () {
