@@ -126,30 +126,34 @@
           ctx.lineTo(bx + 22, by - 42);
           ctx.stroke();
         } else if (b === 2) {
-          var cycle = ((state.t || 0) % 2.4);
-          ctx.fillStyle = "#e8d5a3";
-          if (cycle < 0.25) {
+          var ww = (typeof viewW === "function") ? viewW() : 800;
+          var spanP = ww + 280;
+          var pondX = ((680 - (state.scroll || 0) * 0.55) % spanP + spanP) % spanP - 80;
+          var dist = pondX - bx;
+          if (!state.breadToss && dist > 50 && dist < 170) {
+            state.breadToss = { start: state.t || 0, sx: bx + 12, sy: by - 20, tx: pondX - 10, ty: gy + 8 };
+          }
+          if (state.breadToss && dist < -120) state.breadToss = null;
+          var flying = state.breadToss && ((state.t || 0) - state.breadToss.start) > 0.04;
+          if (!flying) {
+            ctx.fillStyle = "#e8d5a3";
             ctx.fillRect(bx + 10, by - 22, 10, 7);
             ctx.fillStyle = "#c9a66b";
             ctx.fillRect(bx + 10, by - 20, 10, 2);
           }
-          var p = Math.min(1, Math.max(0, (cycle - 0.2) / 1.4));
-          if (cycle >= 0.2) {
-            var breadX = bx + 18 + p * 70;
-            var breadY = by - 18 + p * 34 + Math.sin(p * 3.1) * 8;
+          if (state.breadToss && flying) {
+            var p = Math.min(1, Math.max(0, ((state.t || 0) - state.breadToss.start) / 1.15));
+            var breadX = state.breadToss.sx + (state.breadToss.tx - state.breadToss.sx) * p;
+            var breadY = state.breadToss.sy + (state.breadToss.ty - state.breadToss.sy) * p - Math.sin(p * Math.PI) * 28;
             ctx.fillStyle = "#e8d5a3";
             ctx.fillRect(breadX, breadY, 9, 6);
-            var duckX = bx + 90 - (1 - p) * 40;
-            var duckY = gy + 8 + Math.sin((state.t || 0) * 3) * 2;
+            var d1 = (pondX - 40) + p * (breadX - (pondX - 40));
+            var d2 = (pondX + 48) + p * (breadX - (pondX + 48));
+            var dy1 = gy + 8 + Math.sin((state.t || 0) * 3) * 2;
             ctx.fillStyle = "#f4c430";
             ctx.beginPath();
-            ctx.ellipse(duckX, duckY, 10, 6, 0, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = "#e67e22";
-            ctx.beginPath();
-            ctx.moveTo(duckX - 10, duckY);
-            ctx.lineTo(duckX - 16, duckY + 2);
-            ctx.lineTo(duckX - 10, duckY + 3);
+            ctx.ellipse(d1, dy1, 10, 6, 0, 0, Math.PI * 2);
+            ctx.ellipse(d2, dy1 + 3, 9, 5.5, 0, 0, Math.PI * 2);
             ctx.fill();
           }
         } else if (b === 3) {
@@ -296,6 +300,18 @@
               ctx.arc(fx, fy, 2.4 + (i % 3) * 0.6, 0, Math.PI * 2);
               ctx.fill();
             }
+          }
+          if (b === 7) {
+            var spanS = w + 280;
+            var sx = ((700 - scroll * 0.55) % spanS + spanS) % spanS - 80;
+            var swave = Math.sin((state.t || 0) * 4) * 14;
+            ctx.strokeStyle = "#8b5a2b";
+            ctx.lineWidth = 4;
+            ctx.lineCap = "round";
+            ctx.beginPath();
+            ctx.moveTo(sx + 14, gy - 46);
+            ctx.lineTo(sx + 28 + swave * 0.2, gy - 58 - swave);
+            ctx.stroke();
           }
           if (b !== 5) return;
           var span = w + 280;
