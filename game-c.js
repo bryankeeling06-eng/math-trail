@@ -60,8 +60,27 @@
         duck(x + 48, gy + 10 + Math.sin(state.t * 2 + 1.1) * 2, -1);
       }
 
-      function drawBetterTreehouse(w, h, gy) {
-        var x = w * 0.72;
+      function treeScrollX(w, scroll) {
+        var span = w + 240;
+        var trees = state.trees || [];
+        var tree = trees[3] || trees[0];
+        if (!tree) return w * 0.72;
+        return ((tree.x - scroll * 0.55) % span + span) % span - 60;
+      }
+
+      function drawBetterTreehouse(w, h, gy, scroll) {
+        var x = treeScrollX(w, scroll || 0);
+        ctx.fillStyle = "#6b3a16";
+        ctx.fillRect(x - 10, gy - 128, 20, 128);
+        ctx.fillStyle = "#2e8b3a";
+        ctx.beginPath();
+        ctx.arc(x, gy - 158, 58, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#1f7a32";
+        ctx.beginPath();
+        ctx.arc(x - 28, gy - 140, 28, 0, Math.PI * 2);
+        ctx.arc(x + 30, gy - 138, 26, 0, Math.PI * 2);
+        ctx.fill();
         var hx = x + 8, hy = gy - 100;
         ctx.fillStyle = "#c9843a";
         ctx.fillRect(hx, hy, 56, 40);
@@ -108,7 +127,7 @@
         oldGround(w, h, gy, scroll);
         var b = state.biome || 0;
         if (b === 2) drawBetterPond(w, h, gy);
-        if (b === 3) drawBetterTreehouse(w, h, gy);
+        if (b === 3) drawBetterTreehouse(w, h, gy, scroll);
       };
 
       var rawJump = jump;
