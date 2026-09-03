@@ -122,6 +122,12 @@
         }
       }
 
+      var oldLandmark = drawLandmark;
+      drawLandmark = function(w, h, gy, scroll) {
+        if ((state.biome || 0) === 3) return;
+        oldLandmark(w, h, gy, scroll);
+      };
+
       var oldGround = drawGround;
       drawGround = function(w, h, gy, scroll) {
         oldGround(w, h, gy, scroll);
