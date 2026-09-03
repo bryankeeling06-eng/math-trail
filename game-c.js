@@ -4,7 +4,7 @@
         if (state.didJump) return;
         if (!state.gate || state.gate.smashed) return;
         var dist = state.gate.x - (state.heroX || 180);
-        if (dist <= 230 && dist > -10) rawJump();
+        if (dist <= 360 && dist > -10) rawJump();
       };
 
       var oldChoose = chooseAnswer;
