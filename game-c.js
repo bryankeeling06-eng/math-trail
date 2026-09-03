@@ -122,6 +122,53 @@
         }
       }
 
+      function drawCow(w, h, gy, scroll) {
+        var x = w * 0.55 - (scroll * 0.2) % 30;
+        var y = gy + 2;
+        ctx.fillStyle = "rgba(0,0,0,0.14)";
+        ctx.beginPath();
+        ctx.ellipse(x, y + 16, 28, 6, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#f7f4ea";
+        ctx.beginPath();
+        ctx.ellipse(x, y - 18, 28, 16, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#2b2b2b";
+        ctx.beginPath();
+        ctx.ellipse(x - 10, y - 20, 8, 6, 0, 0, Math.PI * 2);
+        ctx.ellipse(x + 12, y - 14, 7, 5, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#f7f4ea";
+        ctx.fillRect(x - 18, y - 8, 8, 22);
+        ctx.fillRect(x + 10, y - 8, 8, 22);
+        ctx.fillStyle = "#2b2b2b";
+        ctx.fillRect(x - 18, y + 10, 8, 6);
+        ctx.fillRect(x + 10, y + 10, 8, 6);
+        ctx.fillStyle = "#f7f4ea";
+        ctx.beginPath();
+        ctx.arc(x + 26, y - 28, 12, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#f4b6c2";
+        ctx.beginPath();
+        ctx.ellipse(x + 32, y - 24, 8, 5, 0.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#1b2a41";
+        ctx.beginPath();
+        ctx.arc(x + 30, y - 31, 1.6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#e8d9a8";
+        ctx.beginPath();
+        ctx.arc(x + 20, y - 38, 4, 0, Math.PI * 2);
+        ctx.arc(x + 30, y - 40, 3.4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "#c9843a";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(x - 26, y - 12);
+        ctx.quadraticCurveTo(x - 38, y - 6, x - 30, y + 4);
+        ctx.stroke();
+      }
+
       var oldLandmark = drawLandmark;
       drawLandmark = function(w, h, gy, scroll) {
         if ((state.biome || 0) === 3) return;
@@ -134,6 +181,7 @@
         var b = state.biome || 0;
         if (b === 2) drawBetterPond(w, h, gy);
         if (b === 3) drawBetterTreehouse(w, h, gy, scroll);
+        if (b === 4) drawCow(w, h, gy, scroll);
       };
 
       var rawJump = jump;
