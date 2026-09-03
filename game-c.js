@@ -324,6 +324,8 @@
         arriveAtNextPlace = function() {
           oldArrive();
           state.arriveFlash = 2.4;
+          var toastEl = document.getElementById("toast");
+          if (toastEl) toastEl.classList.remove("show");
         };
       }
 
@@ -331,6 +333,10 @@
       tickTrail = function(dt) {
         if (state.buddyHop > 0) state.buddyHop -= dt;
         if (state.arriveFlash > 0) state.arriveFlash -= dt;
+        var pb = document.getElementById("problemBanner");
+        var pn = document.getElementById("levelChip");
+        if (pb) pb.style.visibility = (state.arriveFlash > 0.25) ? "hidden" : "";
+        if (pn) pn.style.visibility = (state.arriveFlash > 0.25) ? "hidden" : "";
         var home = (state.heroX || 180) - 68;
         if (state.buddyRush && state.gate && !state.gate.smashed) {
           state.buddyX = (state.buddyX || home) + 420 * dt;
