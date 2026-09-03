@@ -125,7 +125,7 @@
       <div class="overlay">
         <div class="menu" id="menu">
           <h1>Math Trail</h1>
-          <p class="tag" style="margin-bottom:8px">Version 24 · trail places</p>
+          <p class="tag" style="margin-bottom:8px">Version 25 · new trails</p>
           <p class="tag">Run the hills. Answer to pass each gate.</p>
           <p class="tag" id="runGoal" style="margin-top:-8px;font-weight:800;opacity:1">Next stop: Picnic Spot</p>
           <div class="modes">
@@ -214,7 +214,9 @@
             return loadText("game-b (1).js");
           }).then(function (b) {
             return loadText("game-c.js").catch(function () { return ""; }).then(function (c) {
-              return [a, b, c];
+              return loadText("game-d.js").catch(function () { return ""; }).then(function (d) {
+                return [a, b, c, d];
+              });
             });
           });
         });
