@@ -1,32 +1,56 @@
     (function attachShipDome() {
-      if (typeof ctx !== "undefined" && ctx && ctx.arc) {
-        var rawArc = ctx.arc.bind(ctx);
-        ctx.arc = function(x, y, r, a0, a1, ccw) {
-          rawArc(x, y, Math.max(0.2, Math.abs(Number(r)) || 0.2), a0, a1, ccw);
-        };
+      if (typeof ctx !== "undefined" && ctx) {
+        if (ctx.arc) {
+          var rawArc = ctx.arc.bind(ctx);
+          ctx.arc = function(x, y, r, a0, a1, ccw) {
+            rawArc(x, y, Math.max(0.2, Math.abs(Number(r)) || 0.2), a0, a1, ccw);
+          };
+        }
+        if (ctx.ellipse) {
+          var rawEl = ctx.ellipse.bind(ctx);
+          ctx.ellipse = function(x, y, rx, ry, rot, a0, a1, ccw) {
+            rawEl(x, y, Math.max(0.2, Math.abs(Number(rx)) || 0.2), Math.max(0.2, Math.abs(Number(ry)) || 0.2), rot || 0, a0, a1, ccw);
+          };
+        }
       }
       function forceStart() {
         var tp = document.getElementById("turnPhone");
         if (tp) tp.style.display = "none";
+        var menuEl = document.getElementById("menu");
+        if (menuEl) menuEl.classList.add("hidden");
+        var endEl = document.getElementById("endcard");
+        if (endEl) endEl.classList.add("hidden");
+        if (typeof state !== "undefined") {
+          state.screen = "play";
+          state.paused = false;
+        }
         try {
           if (typeof startGame === "function") startGame(false);
-          else {
-            state.screen = "play";
-            document.getElementById("menu").classList.add("hidden");
-          }
         } catch (err) {
           console.error(err);
-          state.screen = "play";
-          var menuEl = document.getElementById("menu");
-          if (menuEl) menuEl.classList.add("hidden");
         }
       }
+      window.__mtStart = forceStart;
       var startBtn = document.getElementById("startBtn");
-      if (startBtn) startBtn.addEventListener("click", forceStart);
+      if (startBtn) {
+        startBtn.onclick = forceStart;
+        startBtn.addEventListener("click", forceStart);
+      }
       var turn = document.getElementById("turnPhone");
       if (turn) {
         turn.style.cursor = "pointer";
         turn.addEventListener("click", forceStart);
+      }
+      if (typeof frame === "function") {
+        var rawFrame = frame;
+        frame = function(now) {
+          try {
+            rawFrame(now);
+          } catch (err) {
+            console.error(err);
+            requestAnimationFrame(frame);
+          }
+        };
       }
       if (typeof drawBuddy !== "function") return;
       var prev = drawBuddy;
