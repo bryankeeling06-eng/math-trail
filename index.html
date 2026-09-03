@@ -1,1 +1,58 @@
-<!DOCTYPE html><html><head><meta charset='utf-8'><title>redirect</title></head><body>ok</body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Math Trail — Kids Math Runner</title>
+  <style>
+    html, body { margin:0; height:100%; overflow:hidden; font-family:sans-serif; background:#0e2a3a; }
+    #wrap { display:flex; align-items:center; justify-content:center; height:100%; }
+    #stage { position:relative; width:min(1100px,100vw); height:min(720px,100vh); background:#7ec8ff; border-radius:18px; overflow:hidden; }
+    canvas { display:block; width:100%; height:100%; }
+    .overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+    .menu { background:#fff; padding:28px; border-radius:24px; width:min(420px,90%); text-align:center; }
+    .go { width:100%; border:none; background:#2fa84a; color:#fff; font-size:24px; padding:14px; border-radius:16px; cursor:pointer; }
+    .hidden { display:none !important; }
+  </style>
+</head>
+<body>
+  <div id="wrap"><div id="stage">
+    <canvas id="game"></canvas>
+    <div class="overlay"><div class="menu" id="menu">
+      <h1>Math Trail</h1>
+      <button class="go" id="startBtn">Start Trail</button>
+    </div></div>
+    <div id="hearts"></div><div id="scoreChip"></div><div id="levelChip"></div>
+    <div id="problemBanner"></div><div id="answers"></div><div id="endcard" class="hidden"></div>
+    <div id="toast"></div><div id="pauseMask" class="hidden"></div>
+  </div></div>
+  <script>
+    function loadText(url) {
+      return fetch(url, { cache: "no-store" }).then(function (r) {
+        if (!r.ok) throw new Error(url);
+        return r.text();
+      });
+    }
+    function clean(t) {
+      if (!t) return "";
+      var s = String(t).trim();
+      if (s === "see local" || s.indexOf("<") === 0) return "";
+      return t;
+    }
+    Promise.all([
+      loadText("game-a.js"),
+      loadText("game-b.js").catch(function(){ return loadText("game-b (1).js"); }),
+      loadText("game-c.js").catch(function(){ return ""; }),
+      loadText("game-d.js").catch(function(){ return ""; }),
+      loadText("game-e.js").catch(function(){ return ""; }),
+      loadText("game-f.js").catch(function(){ return ""; })
+    ]).then(function (parts) {
+      (0, eval)(parts.map(clean).join("\n"));
+    }).catch(function (e) {
+      console.error(e);
+      alert("Game failed to load. Please refresh.");
+    });
+  </script>
+</body>
+</html>
