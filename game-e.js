@@ -201,6 +201,43 @@
         ctx.restore();
       }
 
+      function drawHatCrow(cx, cy, flip) {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(flip || 1, 1);
+        ctx.fillStyle = "#1b1b1b";
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 7, 4.2, -0.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(6, -2, 4, 3.2, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#f4c430";
+        ctx.beginPath();
+        ctx.moveTo(10, -2);
+        ctx.lineTo(15, -0.5);
+        ctx.lineTo(10, 1);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+      if (typeof drawGround === "function") {
+        var rawG = drawGround;
+        drawGround = function(w, h, gy, scroll) {
+          rawG(w, h, gy, scroll);
+          if ((state.biome || 0) !== 5) return;
+          var span = w + 280;
+          var x = ((760 - scroll * 0.55) % span + span) % span - 80;
+          ctx.fillStyle = "#7a9a3a";
+          ctx.beginPath();
+          ctx.arc(x - 36, gy - 62, 11, 0, Math.PI * 2);
+          ctx.arc(x + 36, gy - 62, 11, 0, Math.PI * 2);
+          ctx.fill();
+          drawHatCrow(x - 10, gy - 124, 1);
+          drawHatCrow(x + 12, gy - 122, -1);
+        };
+      }
+
       if (typeof drawBuddy === "function") {
         var rawBuddy = drawBuddy;
         drawBuddy = function(x, gy) {
