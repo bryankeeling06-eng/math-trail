@@ -182,21 +182,6 @@
           ctx.arc(hx, hy - 6, 1.6, 0, Math.PI * 2);
           ctx.arc(hx + 4, hy - 3, 1.4, 0, Math.PI * 2);
           ctx.fill();
-        } else if (b === 9) {
-          ctx.fillStyle = "#f4c430";
-          ctx.beginPath();
-          ctx.moveTo(hx + 2, hy - 12);
-          ctx.lineTo(hx + 4, hy - 4);
-          ctx.lineTo(hx + 12, hy - 4);
-          ctx.lineTo(hx + 6, hy + 1);
-          ctx.lineTo(hx + 8, hy + 8);
-          ctx.lineTo(hx + 2, hy + 4);
-          ctx.lineTo(hx - 4, hy + 8);
-          ctx.lineTo(hx - 2, hy + 1);
-          ctx.lineTo(hx - 8, hy - 4);
-          ctx.lineTo(hx, hy - 4);
-          ctx.closePath();
-          ctx.fill();
         }
         ctx.restore();
       }
@@ -238,11 +223,53 @@
         };
       }
 
+      function drawBuddyShip(bx, gy) {
+        var hover = Math.sin((state.t || 0) * 6) * 5;
+        var by = gy - 8 + hover;
+        ctx.fillStyle = "rgba(120,200,255,0.18)";
+        ctx.beginPath();
+        ctx.ellipse(bx, gy + 18, 22, 6, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#9aa6b8";
+        ctx.beginPath();
+        ctx.ellipse(bx, by - 6, 28, 10, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#d7deea";
+        ctx.beginPath();
+        ctx.ellipse(bx, by - 10, 22, 8, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#ff8a3c";
+        ctx.beginPath();
+        ctx.moveTo(bx - 10, by + 2);
+        ctx.lineTo(bx - 6, by + 12 + Math.random() * 6);
+        ctx.lineTo(bx - 2, by + 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(bx + 2, by + 2);
+        ctx.lineTo(bx + 6, by + 12 + Math.random() * 6);
+        ctx.lineTo(bx + 10, by + 2);
+        ctx.fill();
+        return by;
+      }
       if (typeof drawBuddy === "function") {
         var rawBuddy = drawBuddy;
         drawBuddy = function(x, gy) {
-          rawBuddy(x, gy);
           var b = state.biome || 0;
+          if (b === 9) {
+            var shipY = drawBuddyShip(x, gy);
+            rawBuddy(x, shipY + 22);
+            ctx.strokeStyle = "#c5cedd";
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.ellipse(x, shipY - 22, 16, 16, 0, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.fillStyle = "rgba(90,190,235,0.22)";
+            ctx.beginPath();
+            ctx.ellipse(x, shipY - 22, 16, 16, 0, 0, Math.PI * 2);
+            ctx.fill();
+            return;
+          }
+          rawBuddy(x, gy);
           if (b === 0) return;
           var hop = 0;
           if (state.buddyHop > 0) hop = Math.sin(Math.min(1, state.buddyHop) * Math.PI) * 18;
