@@ -109,44 +109,75 @@
         var span = w + 280;
         var x = ((760 - scroll * 0.55) % span + span) % span - 80;
         ctx.strokeStyle = "#6b3a16";
-        ctx.lineWidth = 7;
+        ctx.lineWidth = 6;
         ctx.lineCap = "round";
         ctx.beginPath();
-        ctx.moveTo(x, gy - 72);
-        ctx.lineTo(x - 38, gy - 52);
-        ctx.lineTo(x - 52, gy - 30);
-        ctx.moveTo(x, gy - 72);
-        ctx.lineTo(x + 38, gy - 50);
-        ctx.lineTo(x + 54, gy - 28);
+        ctx.moveTo(x, gy - 70);
+        ctx.lineTo(x - 22, gy - 62);
+        ctx.lineTo(x - 28, gy - 50);
+        ctx.moveTo(x, gy - 70);
+        ctx.lineTo(x + 22, gy - 62);
+        ctx.lineTo(x + 28, gy - 50);
         ctx.stroke();
         ctx.fillStyle = "#c45a2a";
         ctx.beginPath();
-        ctx.ellipse(x - 52, gy - 28, 7, 6, -0.3, 0, Math.PI * 2);
-        ctx.ellipse(x + 54, gy - 26, 7, 6, 0.3, 0, Math.PI * 2);
+        ctx.ellipse(x - 28, gy - 48, 6, 5, -0.2, 0, Math.PI * 2);
+        ctx.ellipse(x + 28, gy - 48, 6, 5, 0.2, 0, Math.PI * 2);
         ctx.fill();
-        drawCrow(x - 20, gy - 118, 1);
-        drawCrow(x + 20, gy - 116, -1);
+        drawCrow(x - 16, gy - 84, 1);
+        drawCrow(x + 16, gy - 82, -1);
       }
 
       function dressSnowman(w, h, gy, scroll) {
         var span = w + 280;
         var x = ((700 - scroll * 0.55) % span + span) % span - 80;
+        ctx.fillStyle = "#fff";
+        ctx.beginPath();
+        ctx.arc(x, gy - 18, 20, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(x, gy - 46, 15, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(x, gy - 70, 12, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "#8b5a2b";
+        ctx.lineWidth = 3;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(x - 14, gy - 46);
+        ctx.lineTo(x - 30, gy - 56);
+        ctx.moveTo(x + 14, gy - 46);
+        ctx.lineTo(x + 30, gy - 54);
+        ctx.stroke();
         ctx.fillStyle = "#1b1b1b";
         ctx.beginPath();
-        ctx.arc(x, gy - 28, 2.8, 0, Math.PI * 2);
-        ctx.arc(x, gy - 42, 2.8, 0, Math.PI * 2);
-        ctx.arc(x, gy - 54, 2.8, 0, Math.PI * 2);
+        ctx.arc(x, gy - 36, 2.6, 0, Math.PI * 2);
+        ctx.arc(x, gy - 46, 2.6, 0, Math.PI * 2);
+        ctx.arc(x, gy - 56, 2.6, 0, Math.PI * 2);
         ctx.fill();
         ctx.fillStyle = "#c0392b";
         ctx.beginPath();
-        ctx.ellipse(x, gy - 62, 20, 7, 0, 0, Math.PI * 2);
+        ctx.ellipse(x, gy - 62, 18, 6, 0, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillRect(x + 14, gy - 64, 10, 24);
+        ctx.fillRect(x + 12, gy - 64, 9, 20);
+        ctx.fillStyle = "#1b2a41";
+        ctx.beginPath();
+        ctx.arc(x - 4, gy - 73, 1.7, 0, Math.PI * 2);
+        ctx.arc(x + 4, gy - 73, 1.7, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#e67e22";
+        ctx.beginPath();
+        ctx.moveTo(x, gy - 70);
+        ctx.lineTo(x + 13, gy - 68);
+        ctx.lineTo(x, gy - 66);
+        ctx.closePath();
+        ctx.fill();
         ctx.fillStyle = "#1b1b1b";
-        ctx.fillRect(x - 18, gy - 82, 36, 8);
-        ctx.fillRect(x - 12, gy - 108, 24, 26);
+        ctx.fillRect(x - 16, gy - 84, 32, 7);
+        ctx.fillRect(x - 11, gy - 106, 22, 22);
         ctx.fillStyle = "#c0392b";
-        ctx.fillRect(x - 12, gy - 86, 24, 4);
+        ctx.fillRect(x - 11, gy - 86, 22, 3);
       }
 
       if (typeof drawGround === "function") {
@@ -156,6 +187,17 @@
           var b = state.biome || 0;
           if (b === 5) dressScarecrow(w, h, gy, scroll);
           if (b === 7) dressSnowman(w, h, gy, scroll);
+        };
+      }
+
+      if (typeof tickTrail === "function" && typeof bump === "function") {
+        var rawTick = tickTrail;
+        tickTrail = function(dt) {
+          rawTick(dt);
+          if (state.screen !== "play") return;
+          if (!state.gate || state.gate.smashed || state.answered) return;
+          var vis = (state.heroX || 180) * 2;
+          if (vis + 24 >= state.gate.x - 40) bump();
         };
       }
     })();
