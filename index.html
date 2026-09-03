@@ -153,7 +153,9 @@
           return loadText("game-b.js").catch(function () {
             return loadText("game-b (1).js");
           }).then(function (b) {
-            return [a, b];
+            return loadText("game-c.js").catch(function () { return ""; }).then(function (c) {
+              return [a, b, c];
+            });
           });
         });
       }
