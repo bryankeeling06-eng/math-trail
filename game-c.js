@@ -1,11 +1,18 @@
     (function trailPlayFix() {
+      var rawJump = jump;
+      jump = function() {
+        if (state.didJump) return;
+        if (!state.gate || state.gate.smashed) return;
+        var dist = state.gate.x - (state.heroX || 180);
+        if (dist <= 230 && dist > -10) rawJump();
+      };
+
       var oldChoose = chooseAnswer;
       chooseAnswer = function(i) {
         var was = state.answered;
         oldChoose(i);
         if (state.answered && !was && state.screen === "play") {
           state.buddyHop = 1.2;
-          if (!state.didJump) jump();
         }
       };
 
@@ -26,5 +33,8 @@
       tickTrail = function(dt) {
         if (state.buddyHop > 0) state.buddyHop -= dt;
         oldTick(dt);
+        if (state.answered && state.rushing && state.gate && !state.gate.smashed && !state.didJump) {
+          jump();
+        }
       };
     })();
