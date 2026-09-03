@@ -315,6 +315,17 @@
         return Math.max(72, bx);
       };
 
+      var rawDrawHero = drawHero;
+      drawHero = function(x, gy) {
+        if (state.arriveFlash > 0 || state.dancing) {
+          var bounce = Math.abs(Math.sin(state.t * 10)) * 26;
+          var sway = Math.sin(state.t * 11) * 20;
+          rawDrawHero(x + sway, gy - bounce);
+          return;
+        }
+        rawDrawHero(x, gy);
+      };
+
       var oldDrawBuddy = drawBuddy;
       drawBuddy = function(x, gy) {
         var hop = 0;
@@ -349,8 +360,8 @@
         var oldArrive = arriveAtNextPlace;
         arriveAtNextPlace = function() {
           oldArrive();
-          state.arriveFlash = 2.8;
-          state.arriving = 2.8;
+          state.arriveFlash = 5.2;
+          state.arriving = 5.2;
           state.dancing = true;
           state.holdSpeed = state.speed;
           state.speed = 0;
