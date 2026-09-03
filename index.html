@@ -22,6 +22,7 @@
     .stones { display:flex; align-items:center; gap:6px; padding:8px 12px; }
     .stone { width:14px; height:14px; border-radius:50%; background:#d5e0ea; box-shadow:inset 0 -2px 0 rgba(0,0,0,0.12); }
     .stone.on { background:#f4c430; box-shadow:0 0 0 3px rgba(244,196,48,0.28); }
+    .place-name { position:absolute; top:148px; left:50%; transform:translateX(-50%); background:var(--panel); border-radius:16px; padding:6px 16px; box-shadow:var(--shadow); font-weight:700; font-size:18px; pointer-events:none; white-space:nowrap; }
     .problem-banner { position:absolute; top:78px; left:50%; transform:translateX(-50%); background:var(--panel); border-radius:20px; padding:10px 28px; font-family:"Nunito",sans-serif; font-weight:900; font-size:clamp(28px,6vw,48px); box-shadow:var(--shadow); min-width:180px; text-align:center; pointer-events:none; opacity:0; transition:opacity 0.2s ease; }
     .problem-banner.show { opacity:1; }
     .answers { position:absolute; bottom:18px; left:50%; transform:translateX(-50%); display:none; gap:14px; width:min(640px, calc(100% - 24px)); justify-content:center; }
@@ -63,7 +64,7 @@
     .hidden { display:none !important; }
     .muted { font-size:13px; opacity:0.65; margin-top:10px; }
     .stamps { margin:8px 0 14px; font-size:15px; font-weight:700; line-height:1.4; }
-    @media (max-height:560px) { .ans { height:58px; font-size:26px; } .problem-banner { top:64px; font-size:28px; padding:6px 18px; } }
+    @media (max-height:560px) { .ans { height:58px; font-size:26px; } .problem-banner { top:64px; font-size:28px; padding:6px 18px; } .place-name { top:118px; font-size:16px; } }
   </style>
 </head>
 <body>
@@ -74,7 +75,6 @@
         <div class="chip hearts" id="hearts">❤ ❤ ❤</div>
         <div class="chip" id="scoreChip">⭐ 0</div>
         <div class="chip stones" id="stoneChip" aria-label="Path stones"><span class="stone"></span><span class="stone"></span><span class="stone"></span><span class="stone"></span><span class="stone"></span></div>
-        <div class="chip" id="levelChip">Sunny Hills</div>
         <div class="ctrls">
           <button type="button" class="ctrl" id="pauseBtn" aria-label="Pause">⏸</button>
           <button type="button" class="ctrl" id="muteBtn" aria-label="Mute">🔊</button>
@@ -88,6 +88,7 @@
         </div>
       </div>
       <div class="problem-banner" id="problemBanner">3 + 4</div>
+      <div class="place-name" id="levelChip">Sunny Hills</div>
       <div class="toast" id="toast">Level up!</div>
       <div class="answers" id="answers">
         <button class="ans" data-i="0">0</button>
