@@ -100,87 +100,136 @@
         };
       }
 
-      function drawBuddyProp(bx, by, b) {
-        var hx = bx + 16;
-        var hy = by - 18;
+      function drawBuddyProp(bx, by, b, gy) {
         ctx.save();
         if (b === 1) {
           ctx.strokeStyle = "#8b5a2b";
           ctx.lineWidth = 3;
           ctx.beginPath();
-          ctx.moveTo(hx, hy + 18);
-          ctx.lineTo(hx, hy - 8);
+          ctx.moveTo(bx + 8, by - 20);
+          ctx.lineTo(bx + 2, by - 62);
           ctx.stroke();
           ctx.fillStyle = "#e74c3c";
           ctx.beginPath();
-          ctx.moveTo(hx, hy - 8);
-          ctx.quadraticCurveTo(hx + 22, hy - 2, hx, hy + 10);
-          ctx.closePath();
+          ctx.moveTo(bx + 2, by - 62);
+          ctx.quadraticCurveTo(bx - 26, by - 50, bx - 28, by - 38);
+          ctx.lineTo(bx + 2, by - 44);
+          ctx.quadraticCurveTo(bx + 30, by - 50, bx + 32, by - 38);
+          ctx.lineTo(bx + 2, by - 62);
           ctx.fill();
-        } else if (b === 2) {
-          ctx.fillStyle = "#e8d5a3";
-          ctx.fillRect(hx - 6, hy - 2, 14, 8);
-          ctx.fillStyle = "#c9a66b";
-          ctx.fillRect(hx - 6, hy + 1, 14, 2);
-        } else if (b === 3) {
-          ctx.strokeStyle = "#8b5a2b";
-          ctx.lineWidth = 3;
+          ctx.strokeStyle = "#c0392b";
+          ctx.lineWidth = 1.5;
           ctx.beginPath();
-          ctx.moveTo(hx - 4, hy + 16);
-          ctx.lineTo(hx + 2, hy - 10);
+          ctx.moveTo(bx + 2, by - 62);
+          ctx.lineTo(bx - 18, by - 42);
+          ctx.moveTo(bx + 2, by - 62);
+          ctx.lineTo(bx + 22, by - 42);
           ctx.stroke();
-          ctx.fillStyle = "#c0392b";
-          ctx.fillRect(hx - 2, hy - 14, 10, 6);
+        } else if (b === 2) {
+          var cycle = ((state.t || 0) % 2.4);
+          ctx.fillStyle = "#e8d5a3";
+          if (cycle < 0.25) {
+            ctx.fillRect(bx + 10, by - 22, 10, 7);
+            ctx.fillStyle = "#c9a66b";
+            ctx.fillRect(bx + 10, by - 20, 10, 2);
+          }
+          var p = Math.min(1, Math.max(0, (cycle - 0.2) / 1.4));
+          if (cycle >= 0.2) {
+            var breadX = bx + 18 + p * 70;
+            var breadY = by - 18 + p * 34 + Math.sin(p * 3.1) * 8;
+            ctx.fillStyle = "#e8d5a3";
+            ctx.fillRect(breadX, breadY, 9, 6);
+            var duckX = bx + 90 - (1 - p) * 40;
+            var duckY = gy + 8 + Math.sin((state.t || 0) * 3) * 2;
+            ctx.fillStyle = "#f4c430";
+            ctx.beginPath();
+            ctx.ellipse(duckX, duckY, 10, 6, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "#e67e22";
+            ctx.beginPath();
+            ctx.moveTo(duckX - 10, duckY);
+            ctx.lineTo(duckX - 16, duckY + 2);
+            ctx.lineTo(duckX - 10, duckY + 3);
+            ctx.fill();
+          }
+        } else if (b === 3) {
+          ctx.fillStyle = "#8b5a2b";
+          ctx.fillRect(bx + 12, by - 36, 4, 28);
+          ctx.fillStyle = "#7f8c8d";
+          ctx.fillRect(bx + 4, by - 42, 20, 10);
+          ctx.fillStyle = "#95a5a6";
+          ctx.fillRect(bx + 6, by - 40, 16, 6);
         } else if (b === 4) {
-          ctx.fillStyle = "#bdc3c7";
-          ctx.fillRect(hx - 5, hy - 2, 12, 10);
-          ctx.fillRect(hx + 6, hy, 4, 6);
+          ctx.fillStyle = "#cfd4da";
+          ctx.fillRect(bx + 6, by - 28, 22, 20);
+          ctx.fillRect(bx + 4, by - 32, 26, 6);
+          ctx.fillStyle = "#fff";
+          ctx.font = "bold 7px sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillStyle = "#2c3e50";
+          ctx.fillText("MILK", bx + 17, by - 14);
         } else if (b === 5) {
           ctx.fillStyle = "#e67e22";
           ctx.beginPath();
-          ctx.ellipse(hx + 2, hy + 2, 8, 6, 0, 0, Math.PI * 2);
+          ctx.ellipse(bx + 18, by - 12, 9, 7, 0, 0, Math.PI * 2);
           ctx.fill();
           ctx.fillStyle = "#2e8b3a";
-          ctx.fillRect(hx, hy - 6, 3, 5);
+          ctx.fillRect(bx + 16, by - 20, 3, 6);
         } else if (b === 6) {
           ctx.strokeStyle = "#fff8e7";
           ctx.lineWidth = 3;
           ctx.beginPath();
-          ctx.moveTo(hx, hy + 16);
-          ctx.lineTo(hx, hy - 2);
+          ctx.moveTo(bx + 14, by - 4);
+          ctx.lineTo(bx + 14, by - 22);
           ctx.stroke();
           ctx.fillStyle = "#ff4d8d";
           ctx.beginPath();
-          ctx.arc(hx, hy - 8, 8, 0, Math.PI * 2);
+          ctx.arc(bx + 14, by - 30, 11, 0, Math.PI * 2);
           ctx.fill();
+          ctx.strokeStyle = "#fff";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(bx + 14, by - 30, 8, 0.2, 2.2);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(bx + 14, by - 30, 5, 2.4, 4.6);
+          ctx.stroke();
         } else if (b === 7) {
+          ctx.strokeStyle = "#8b5a2b";
+          ctx.lineWidth = 4;
+          ctx.lineCap = "round";
+          ctx.beginPath();
+          ctx.moveTo(bx + 14, by - 6);
+          ctx.lineTo(bx + 14, by - 34);
+          ctx.stroke();
           ctx.strokeStyle = "#7f8c8d";
           ctx.lineWidth = 3;
           ctx.beginPath();
-          ctx.moveTo(hx - 2, hy + 16);
-          ctx.lineTo(hx + 4, hy - 6);
+          ctx.arc(bx + 14, by - 8, 5, 0, Math.PI);
           ctx.stroke();
           ctx.fillStyle = "#95a5a6";
           ctx.beginPath();
-          ctx.moveTo(hx - 8, hy - 2);
-          ctx.lineTo(hx + 10, hy - 8);
-          ctx.lineTo(hx + 10, hy - 2);
+          ctx.moveTo(bx + 4, by - 34);
+          ctx.lineTo(bx + 24, by - 34);
+          ctx.lineTo(bx + 22, by - 46);
+          ctx.lineTo(bx + 6, by - 46);
           ctx.closePath();
           ctx.fill();
-        } else if (b === 8) {
-          ctx.fillStyle = "rgba(180,230,255,0.45)";
-          ctx.beginPath();
-          ctx.arc(hx + 2, hy - 4, 8, Math.PI, 0);
-          ctx.fill();
-          ctx.strokeStyle = "#d0e8f8";
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.arc(hx + 2, hy - 4, 8, Math.PI, 0);
+          ctx.strokeStyle = "#7f8c8d";
           ctx.stroke();
+        } else if (b === 8) {
+          ctx.fillStyle = "rgba(210,240,255,0.45)";
+          ctx.fillRect(bx + 6, by - 36, 18, 22);
+          ctx.strokeStyle = "#a8d4ea";
+          ctx.lineWidth = 2;
+          ctx.strokeRect(bx + 6, by - 36, 18, 22);
+          ctx.fillStyle = "#d0eaf8";
+          ctx.fillRect(bx + 4, by - 40, 22, 6);
           ctx.fillStyle = "#7dffb3";
           ctx.beginPath();
-          ctx.arc(hx, hy - 6, 1.6, 0, Math.PI * 2);
-          ctx.arc(hx + 4, hy - 3, 1.4, 0, Math.PI * 2);
+          ctx.arc(bx + 12, by - 24, 2.2, 0, Math.PI * 2);
+          ctx.arc(bx + 18, by - 28, 1.8, 0, Math.PI * 2);
+          ctx.arc(bx + 15, by - 20, 1.6, 0, Math.PI * 2);
           ctx.fill();
         }
         ctx.restore();
@@ -223,49 +272,45 @@
         };
       }
 
-      function drawBuddyShip(bx, gy) {
-        var hover = Math.sin((state.t || 0) * 6) * 5;
-        var by = gy - 8 + hover;
-        ctx.fillStyle = "rgba(120,200,255,0.18)";
-        ctx.beginPath();
-        ctx.ellipse(bx, gy + 18, 22, 6, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = "#9aa6b8";
-        ctx.beginPath();
-        ctx.ellipse(bx, by - 6, 28, 10, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = "#d7deea";
-        ctx.beginPath();
-        ctx.ellipse(bx, by - 10, 22, 8, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = "#ff8a3c";
-        ctx.beginPath();
-        ctx.moveTo(bx - 10, by + 2);
-        ctx.lineTo(bx - 6, by + 12 + Math.random() * 6);
-        ctx.lineTo(bx - 2, by + 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.moveTo(bx + 2, by + 2);
-        ctx.lineTo(bx + 6, by + 12 + Math.random() * 6);
-        ctx.lineTo(bx + 10, by + 2);
-        ctx.fill();
-        return by;
-      }
       if (typeof drawBuddy === "function") {
         var rawBuddy = drawBuddy;
         drawBuddy = function(x, gy) {
           var b = state.biome || 0;
           if (b === 9) {
-            var shipY = drawBuddyShip(x, gy);
-            rawBuddy(x, shipY + 22);
+            var hover = Math.sin((state.t || 0) * 5) * 6;
+            var rimY = gy - 6 + hover;
+            ctx.fillStyle = "rgba(120,200,255,0.16)";
+            ctx.beginPath();
+            ctx.ellipse(x, gy + 20 + hover, 30, 7, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "#ff8a3c";
+            ctx.beginPath();
+            ctx.moveTo(x - 12, rimY + 8);
+            ctx.lineTo(x - 7, rimY + 22 + Math.random() * 6);
+            ctx.lineTo(x - 2, rimY + 8);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(x + 2, rimY + 8);
+            ctx.lineTo(x + 7, rimY + 22 + Math.random() * 6);
+            ctx.lineTo(x + 12, rimY + 8);
+            ctx.fill();
+            rawBuddy(x, rimY + 8);
+            ctx.fillStyle = "#8e99ab";
+            ctx.beginPath();
+            ctx.ellipse(x, rimY + 6, 36, 14, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "#d5dce8";
+            ctx.beginPath();
+            ctx.ellipse(x, rimY + 2, 28, 10, 0, 0, Math.PI * 2);
+            ctx.fill();
             ctx.strokeStyle = "#c5cedd";
             ctx.lineWidth = 3;
             ctx.beginPath();
-            ctx.ellipse(x, shipY - 22, 16, 16, 0, 0, Math.PI * 2);
+            ctx.ellipse(x, rimY - 20, 20, 22, 0, Math.PI, 0);
             ctx.stroke();
             ctx.fillStyle = "rgba(90,190,235,0.22)";
             ctx.beginPath();
-            ctx.ellipse(x, shipY - 22, 16, 16, 0, 0, Math.PI * 2);
+            ctx.ellipse(x, rimY - 20, 20, 22, 0, Math.PI, 0);
             ctx.fill();
             return;
           }
@@ -274,7 +319,7 @@
           var hop = 0;
           if (state.buddyHop > 0) hop = Math.sin(Math.min(1, state.buddyHop) * Math.PI) * 18;
           var by = gy + Math.sin(state.runPhase * 2 + 1) * 3 - hop;
-          drawBuddyProp(x, by, b);
+          drawBuddyProp(x, by, b, gy);
         };
       }
     })();
