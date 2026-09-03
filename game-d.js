@@ -108,24 +108,46 @@
       function dressScarecrow(w, h, gy, scroll) {
         var span = w + 280;
         var x = ((760 - scroll * 0.55) % span + span) % span - 80;
+        ctx.fillStyle = "#7a9a3a";
+        ctx.fillRect(x - 72, gy - 140, 144, 118);
+        ctx.fillStyle = "#8b5a2b";
+        ctx.fillRect(x - 4, gy - 100, 8, 100);
+        ctx.fillStyle = "#c45a2a";
+        ctx.fillRect(x - 18, gy - 78, 36, 34);
+        ctx.fillStyle = "#6b3a16";
+        ctx.fillRect(x - 18, gy - 48, 36, 5);
         ctx.strokeStyle = "#6b3a16";
         ctx.lineWidth = 6;
         ctx.lineCap = "round";
         ctx.beginPath();
-        ctx.moveTo(x, gy - 70);
-        ctx.lineTo(x - 22, gy - 62);
-        ctx.lineTo(x - 28, gy - 50);
-        ctx.moveTo(x, gy - 70);
-        ctx.lineTo(x + 22, gy - 62);
-        ctx.lineTo(x + 28, gy - 50);
+        ctx.moveTo(x - 18, gy - 68);
+        ctx.lineTo(x - 36, gy - 56);
+        ctx.moveTo(x + 18, gy - 68);
+        ctx.lineTo(x + 36, gy - 56);
         ctx.stroke();
-        ctx.fillStyle = "#c45a2a";
+        ctx.fillStyle = "#ffe0bd";
         ctx.beginPath();
-        ctx.ellipse(x - 28, gy - 48, 6, 5, -0.2, 0, Math.PI * 2);
-        ctx.ellipse(x + 28, gy - 48, 6, 5, 0.2, 0, Math.PI * 2);
+        ctx.arc(x, gy - 92, 13, 0, Math.PI * 2);
         ctx.fill();
-        drawCrow(x - 16, gy - 84, 1);
-        drawCrow(x + 16, gy - 82, -1);
+        ctx.fillStyle = "#5d3a1a";
+        ctx.beginPath();
+        ctx.arc(x - 5, gy - 94, 1.6, 0, Math.PI * 2);
+        ctx.arc(x + 5, gy - 94, 1.6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "#5d3a1a";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(x, gy - 88, 4, 0.2, Math.PI - 0.2);
+        ctx.stroke();
+        ctx.fillStyle = "#d4a017";
+        ctx.beginPath();
+        ctx.ellipse(x, gy - 100, 22, 5, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillRect(x - 12, gy - 118, 24, 18);
+        ctx.fillStyle = "#c9843a";
+        ctx.fillRect(x - 12, gy - 102, 24, 3);
+        drawCrow(x - 36, gy - 62, 1);
+        drawCrow(x + 36, gy - 62, -1);
       }
 
       function dressSnowman(w, h, gy, scroll) {
