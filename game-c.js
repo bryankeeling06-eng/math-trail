@@ -393,7 +393,18 @@
           dx = x + Math.sin(state.t * 11) * 20;
         }
         if (dragon) drawBatWings(dx, dy);
+        var rawEllipse = ctx.ellipse;
+        var used = false;
+        ctx.ellipse = function(ex, ey, rx, ry, rot, a0, a1) {
+          if (!used && Math.abs(ey - (gy + 16)) < 1 && Math.abs(rx - 26) < 1) {
+            used = true;
+            var dance = state.dancing ? Math.sin(state.t * 14) * 8 : 0;
+            return rawEllipse.call(ctx, ex + dx + dance, ey, rx, ry, rot, a0, a1);
+          }
+          return rawEllipse.apply(ctx, arguments);
+        };
         rawDrawHero(dx, dy);
+        ctx.ellipse = rawEllipse;
       };
 
       var oldDrawBuddy = drawBuddy;
