@@ -32,8 +32,32 @@
         ctx.restore();
       }
 
-      function drawBetterPond(w, h, gy) {
-        var x = w * 0.62;
+      function worldX(w, scroll, seed) {
+        var span = w + 280;
+        return ((seed - scroll * 0.55) % span + span) % span - 80;
+      }
+
+      function drawPicnic(w, h, gy, scroll) {
+        var x = worldX(w, scroll, 420);
+        var y = gy + 4;
+        ctx.fillStyle = "#c0392b";
+        ctx.fillRect(x - 50, y - 6, 100, 10);
+        ctx.fillStyle = "#fff8e7";
+        for (var i = 0; i < 7; i++) {
+          for (var j = 0; j < 5; j++) {
+            if ((i + j) % 2 === 0) ctx.fillRect(x - 48 + i * 14, y - 4 + j * 2, 14, 2);
+          }
+        }
+        ctx.fillStyle = "#d4a017";
+        ctx.beginPath();
+        ctx.ellipse(x + 26, y - 16, 16, 10, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#8b5a2b";
+        ctx.fillRect(x + 18, y - 26, 16, 10);
+      }
+
+      function drawBetterPond(w, h, gy, scroll) {
+        var x = worldX(w, scroll, 680);
         ctx.fillStyle = "#245a38";
         ctx.beginPath();
         ctx.ellipse(x, gy + 22, 168, 38, 0, 0, Math.PI * 2);
@@ -122,9 +146,34 @@
         }
       }
 
+      function drawBarn(w, h, gy, scroll) {
+        var x = worldX(w, scroll, 900);
+        ctx.fillStyle = "#c0392b";
+        ctx.fillRect(x - 50, gy - 90, 100, 90);
+        ctx.fillStyle = "#8b1e13";
+        ctx.beginPath();
+        ctx.moveTo(x - 62, gy - 88);
+        ctx.lineTo(x, gy - 130);
+        ctx.lineTo(x + 62, gy - 88);
+        ctx.fill();
+        ctx.fillStyle = "#fff3c4";
+        ctx.fillRect(x - 16, gy - 48, 18, 22);
+        ctx.fillStyle = "#5d3a1a";
+        ctx.fillRect(x + 18, gy - 36, 16, 36);
+        ctx.strokeStyle = "#8b5a2b";
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(x - 90, gy - 22);
+        ctx.lineTo(x - 52, gy - 22);
+        ctx.stroke();
+        drawCowAt(x - 78, gy + 2);
+      }
+
       function drawCow(w, h, gy, scroll) {
-        var x = w * 0.55 - (scroll * 0.2) % 30;
-        var y = gy + 2;
+        drawCowAt(worldX(w, scroll, 820), gy + 2);
+      }
+
+      function drawCowAt(x, y) {
         ctx.fillStyle = "rgba(0,0,0,0.14)";
         ctx.beginPath();
         ctx.ellipse(x, y + 16, 28, 6, 0, 0, Math.PI * 2);
@@ -171,7 +220,8 @@
 
       var oldLandmark = drawLandmark;
       drawLandmark = function(w, h, gy, scroll) {
-        if ((state.biome || 0) === 3) return;
+        var b = state.biome || 0;
+        if (b === 1 || b === 2 || b === 3 || b === 4) return;
         oldLandmark(w, h, gy, scroll);
       };
 
@@ -179,9 +229,10 @@
       drawGround = function(w, h, gy, scroll) {
         oldGround(w, h, gy, scroll);
         var b = state.biome || 0;
-        if (b === 2) drawBetterPond(w, h, gy);
+        if (b === 1) drawPicnic(w, h, gy, scroll);
+        if (b === 2) drawBetterPond(w, h, gy, scroll);
         if (b === 3) drawBetterTreehouse(w, h, gy, scroll);
-        if (b === 4) drawCow(w, h, gy, scroll);
+        if (b === 4) drawBarn(w, h, gy, scroll);
       };
 
       var rawJump = jump;
