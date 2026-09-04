@@ -112,7 +112,7 @@
         <div class="ctrls">
           <button type="button" class="ctrl" id="fullBtn">⛶</button>
           <button type="button" class="ctrl" id="pauseBtn">⏸</button>
-          <button type="button" class="ctrl" id="muteBtn">🗣</button>
+          <button type="button" class="ctrl" id="muteBtn">🔇</button>
         </div>
       </div>
       <div class="pauseMask hidden" id="pauseMask">
@@ -191,7 +191,8 @@
       loadText("props-fix.js").catch(function () { return ""; }),
       loadText("trail-polish.js").catch(function () { return ""; }),
       loadText("animals.js").catch(function () { return ""; }),
-      loadText("daily-trail.js").catch(function () { return ""; })
+      loadText("daily-trail.js").catch(function () { return ""; }),
+      loadText("space-sky.js").catch(function () { return ""; })
     ]).then(function (parts) {
       (0, eval)(parts.map(clean).join("\n"));
     }).catch(function () {
