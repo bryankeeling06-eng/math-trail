@@ -72,6 +72,27 @@
     .hidden { display:none !important; }
     .muted { font-size:13px; opacity:0.65; margin-top:10px; }
     .stamps { margin:8px 0 14px; font-size:15px; font-weight:700; }
+    @media (max-height: 560px) {
+      .overlay { padding: 8px; }
+      .menu, .endcard {
+        padding: 10px 12px;
+        width: min(360px, 86%);
+        max-height: 92%;
+        overflow: auto;
+        border-radius: 16px;
+      }
+      .menu h1, .endcard h1 { font-size: 24px; margin: 0 0 2px; }
+      .tag { margin: 0 0 6px; font-size: 13px; }
+      .modes { margin: 4px 0 8px; gap: 6px; }
+      .mode { padding: 4px 2px; font-size: 12px; border-radius: 10px; }
+      .mode span { font-size: 16px; margin-bottom: 0; }
+      .go, .again { font-size: 16px; padding: 8px; box-shadow: 0 4px 0 #1e7a32; }
+      .shopBtn { font-size: 15px; padding: 8px; margin-top: 6px; }
+      .how, .muted { display: none; }
+      #starBank { margin: 6px 0 0 !important; }
+      #continueBtn { margin-top: 6px !important; }
+      .shop { padding: 10px; max-height: 92%; }
+    }
   </style>
 </head>
 <body>
