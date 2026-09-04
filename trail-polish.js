@@ -69,31 +69,52 @@
         return layer.base + n;
       }
 
+      function hash(n) {
+        var x = Math.sin(n * 127.1 + 311.7) * 43758.5453;
+        return x - Math.floor(x);
+      }
+
       function sprinkleHills(w, h, gy, scroll) {
-        var cols = ["#ff4d8d", "#fff7fb", "#7dffb3", "#ffd166", "#6ec6ff", "#c56cff", "#ff8ab8", "#ff6b6b", "#ffe66d"];
+        var cols = ["#ff4d8d", "#fff7fb", "#7dffb3", "#ffd166", "#6ec6ff", "#c56cff", "#ff8ab8", "#ff6b6b", "#ffe66d", "#ffffff"];
         var layers = [
-          { speed: 0.18, amp: 28, base: gy - 90 },
-          { speed: 0.32, amp: 22, base: gy - 40 }
+          { speed: 0.18, amp: 28, base: gy - 90, depth: 52 },
+          { speed: 0.32, amp: 22, base: gy - 40, depth: 38 }
         ];
-        var span = w + 80;
+        var span = w + 120;
         for (var L = 0; L < layers.length; L++) {
           var layer = layers[L];
-          for (var i = 0; i < 70; i++) {
-            var seed = i * 37 + L * 19;
-            var sx = ((seed - scroll * layer.speed) % span + span) % span - 20;
-            var sy = hillY(sx, scroll, layer) + 6;
-            ctx.fillStyle = cols[(i + L * 4) % cols.length];
+          for (var i = 0; i < 95; i++) {
+            var a = hash(i * 17.3 + L * 91.1);
+            var b = hash(i * 9.7 + L * 4.2 + 20);
+            var c = hash(i * 3.1 + L * 13.8 + 50);
+            var d = hash(i * 21.4 + L * 2.6 + 80);
+            var seed = a * span;
+            var sx = ((seed - scroll * layer.speed) % span + span) % span - 30;
+            var ridge = hillY(sx, scroll, layer);
+            var nextY = gy + 8;
+            var room = Math.max(12, nextY - ridge);
+            var sy = ridge + 4 + b * Math.min(layer.depth, room - 4);
+            if (sy > gy + 10) continue;
+            ctx.fillStyle = cols[Math.floor(c * cols.length)];
             ctx.beginPath();
-            ctx.ellipse(sx, sy, 2.4 + (i % 3) * 0.5, 1.5 + (i % 2) * 0.4, 0.35, 0, Math.PI * 2);
+            if (d > 0.55) {
+              ctx.ellipse(sx, sy, 2.8 + a * 1.4, 1.05, d * Math.PI, 0, Math.PI * 2);
+            } else {
+              ctx.arc(sx, sy, 1.3 + b * 1.4, 0, Math.PI * 2);
+            }
             ctx.fill();
           }
         }
-        for (var g = 0; g < 50; g++) {
-          var gx = ((g * 27 - scroll * 0.9) % (w + 20) + (w + 20)) % (w + 20) - 8;
-          var gy2 = gy + 3 + (g % 3) * 4;
-          ctx.fillStyle = cols[g % cols.length];
+        for (var g = 0; g < 40; g++) {
+          var p = hash(g * 14.2 + 3.3);
+          var q = hash(g * 8.8 + 7.1);
+          var r = hash(g * 19.5 + 1.4);
+          var gx = ((p * (w + 40) - scroll * 0.9) % (w + 40) + (w + 40)) % (w + 40) - 12;
+          var gy2 = gy + 2 + q * 14;
+          ctx.fillStyle = cols[Math.floor(r * cols.length)];
           ctx.beginPath();
-          ctx.arc(gx, gy2, 1.7 + (g % 3) * 0.35, 0, Math.PI * 2);
+          if (p > 0.5) ctx.ellipse(gx, gy2, 2.4, 1, q * Math.PI, 0, Math.PI * 2);
+          else ctx.arc(gx, gy2, 1.4 + q, 0, Math.PI * 2);
           ctx.fill();
         }
       }
