@@ -40,6 +40,68 @@
         ctx.translate(-x, -(gy + (state.heroY || 0) - 48));
       }
 
+      function drawHats(x, gy) {
+        var c = typeof costume === "function" ? costume() : {};
+        var acc = c.acc || "none";
+        if (!acc || acc === "none" || acc === "antenna") return;
+        var p = pose(x, gy), y = p.y, bob = p.bob;
+        ctx.save();
+        ctx.translate(p.dance, 0);
+        beginSpin(x, gy);
+        if (acc === "cape" || acc === "starcape") {
+          ctx.fillStyle = acc === "starcape" ? "#f4c430" : "#c0392b";
+          ctx.beginPath();
+          ctx.moveTo(x - 6, y - 48 + bob);
+          ctx.quadraticCurveTo(x - 46, y - 16 + bob, x - 16, y - 4 + bob);
+          ctx.lineTo(x - 4, y - 26 + bob);
+          ctx.fill();
+        }
+        if (acc === "picnic") {
+          ctx.fillStyle = "#c0392b";
+          ctx.beginPath(); ctx.ellipse(x, y - 86 + bob, 20, 6, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#fff8e7";
+          ctx.beginPath(); ctx.ellipse(x, y - 90 + bob, 13, 8, 0, Math.PI, Math.PI * 2); ctx.fill();
+        }
+        if (acc === "straw") {
+          ctx.fillStyle = "#e2b84a";
+          ctx.beginPath(); ctx.ellipse(x, y - 82 + bob, 22, 6, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#c9922a";
+          ctx.fillRect(x - 10, y - 96 + bob, 20, 14);
+        }
+        if (acc === "wizard") {
+          ctx.fillStyle = "#6c3483";
+          ctx.beginPath(); ctx.moveTo(x - 16, y - 80 + bob); ctx.lineTo(x, y - 118 + bob); ctx.lineTo(x + 16, y - 80 + bob); ctx.fill();
+          ctx.fillStyle = "#f4c430";
+          ctx.beginPath(); ctx.arc(x + 6, y - 98 + bob, 2.4, 0, Math.PI * 2); ctx.fill();
+        }
+        if (acc === "firefly") {
+          ctx.fillStyle = "rgba(255,255,220,0.7)";
+          ctx.fillRect(x + 12, y - 78 + bob, 16, 18);
+          ctx.strokeStyle = "#7a4b00"; ctx.lineWidth = 2; ctx.strokeRect(x + 12, y - 78 + bob, 16, 18);
+          ctx.fillStyle = "#f4c430";
+          ctx.beginPath(); ctx.arc(x + 20, y - 68 + bob, 3.2, 0, Math.PI * 2); ctx.fill();
+        }
+        if (acc === "backpack") {
+          ctx.fillStyle = "#2b6cb0"; ctx.fillRect(x - 26, y - 46 + bob, 14, 22);
+          ctx.fillStyle = "#f4c430"; ctx.fillRect(x - 24, y - 40 + bob, 10, 8);
+        }
+        if (acc === "mask") {
+          ctx.fillStyle = "#1b2a41";
+          ctx.fillRect(x - 14, y - 66 + bob, 28, 10);
+        }
+        if (acc === "horn") {
+          ctx.fillStyle = "#f4c430";
+          ctx.beginPath(); ctx.moveTo(x - 2, y - 78 + bob); ctx.lineTo(x + 2, y - 78 + bob); ctx.lineTo(x, y - 104 + bob); ctx.fill();
+        }
+        if (acc === "wings") {
+          var flap = Math.sin(state.runPhase || 0) * 8;
+          ctx.fillStyle = "#d7ecff";
+          ctx.beginPath(); ctx.ellipse(x - 28, y - 40 + bob - flap, 16, 10, -0.4, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.ellipse(x + 28, y - 40 + bob - flap, 16, 10, 0.4, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.restore();
+      }
+
       function drawBunny(x, gy) {
         var p = pose(x, gy), y = p.y, bob = p.bob, look = p.look;
         shadow(x, gy);
@@ -79,6 +141,7 @@
         ctx.moveTo(x + 6, y - 54 + bob); ctx.lineTo(x + 19, y - 50 + bob);
         ctx.stroke();
         ctx.restore();
+        drawHats(x, gy);
       }
 
       function drawFrog(x, gy) {
@@ -110,6 +173,7 @@
         ctx.strokeStyle = "#2e8b3a"; ctx.lineWidth = 2; ctx.lineCap = "round";
         ctx.beginPath(); ctx.arc(x + 1, y - 44 + bob, 8, 0.15, Math.PI - 0.15); ctx.stroke();
         ctx.restore();
+        drawHats(x, gy);
       }
 
       function drawOwl(x, gy) {
@@ -143,6 +207,7 @@
         ctx.beginPath(); ctx.ellipse(x - 8, y - 6 + bob, 5, 3, 0.2, 0, Math.PI * 2); ctx.fill();
         ctx.beginPath(); ctx.ellipse(x + 8, y - 6 + bob, 5, 3, -0.2, 0, Math.PI * 2); ctx.fill();
         ctx.restore();
+        drawHats(x, gy);
       }
 
       function drawPenguin(x, gy) {
@@ -185,6 +250,7 @@
         ctx.closePath();
         ctx.fill();
         ctx.restore();
+        drawHats(x, gy);
       }
 
       drawHero = function(x, gy) {
