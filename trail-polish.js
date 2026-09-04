@@ -1,19 +1,22 @@
     (function trailPolish() {
+      function placeId() {
+        try {
+          if (typeof currentPlace === "function" && currentPlace()) return currentPlace().id;
+        } catch (e) {}
+        return "";
+      }
       function inSpace() {
-        return (state.biome || 0) === 9 || !!state.launching;
+        var b = state.biome || 0;
+        return b === 9 || b === 5 || placeId() === "space" || !!state.launching;
       }
       function candyTrail() {
-        return (state.biome || 0) === 6;
+        return (state.biome || 0) === 6 || placeId() === "candy";
       }
       function snowTrail() {
-        return (state.biome || 0) === 7;
+        return (state.biome || 0) === 7 || placeId() === "snow";
       }
       function pondTrail() {
-        return (state.biome || 0) === 2;
-      }
-
-      if (typeof WIN_MOVES !== "undefined" && WIN_MOVES.indexOf("beam") < 0) {
-        WIN_MOVES.push("beam");
+        return (state.biome || 0) === 2 || placeId() === "pond";
       }
 
       function shipX() {
@@ -271,19 +274,27 @@
         };
       }
 
+      function startBeam() {
+        if (!inSpace()) return false;
+        state.rushing = false;
+        state.dancing = false;
+        state.sliding = false;
+        state.jumpArc = false;
+        state.beamUp = true;
+        state.beamT = 0;
+        return true;
+      }
+
       if (typeof chooseAnswer === "function") {
         var rawChoose = chooseAnswer;
         chooseAnswer = function(i) {
           rawChoose(i);
-          if (state.answered && state.winMove === "beam") {
-            state.rushing = false;
-            state.dancing = false;
-            state.sliding = false;
-            state.beamUp = true;
-            state.beamT = 0;
-            if (state.gate) { state.gate.smashed = true; state.gate.smashT = 0; }
-          } else if (state.winMove !== "beam") {
-            state.beamUp = false;
+          if (state.answered && state.screen === "play") {
+            if (startBeam()) {
+              if (typeof smashGate === "function" && state.gate && !state.gate.smashT) smashGate(true);
+            } else {
+              state.beamUp = false;
+            }
           }
         };
       }
@@ -291,14 +302,9 @@
       if (typeof smashGate === "function") {
         var rawSmash = smashGate;
         smashGate = function(success) {
-          if (success && state.winMove === "beam") {
-            state.beamUp = true;
-            state.beamT = 0;
-            state.rushing = false;
-            if (state.gate) { state.gate.smashed = true; state.gate.smashT = 0; }
-            return;
-          }
+          if (success) startBeam();
           rawSmash(success);
+          if (success) state.nextGateIn = Math.max(state.nextGateIn || 0, 1.6);
         };
       }
 
