@@ -9,15 +9,12 @@
         return (state.heroX || 180) * 2;
       }
 
-      function parkGate() {
-        if (!state.gate || state.gate.smashed) return;
+      function parkGateOnce() {
+        if (!state.gate || state.gate.smashed || state.gateParked) return;
         var w = (typeof viewW === "function") ? viewW() : 800;
         var hx = visHero();
-        var minX = hx + 150;
-        var maxX = w * 0.78;
-        var target = Math.max(minX, Math.min(maxX, w * 0.68));
-        if (state.gate.x > target + 8) state.gate.x = target;
-        if (state.gate.x < minX) state.gate.x = minX;
+        state.gate.x = Math.min(w * 0.72, hx + 170);
+        state.gateParked = true;
       }
 
       function beginWin() {
@@ -27,7 +24,8 @@
           m = MOVES[(state.score || 1) % MOVES.length];
           state.winMove = m;
         }
-        parkGate();
+        state.gateParked = false;
+        parkGateOnce();
         state.didJump = false;
         state.jumpArc = false;
         state.beamUp = false;
@@ -46,13 +44,12 @@
           state.winHold = 1.25;
         } else {
           state.rushing = true;
-          state.winHold = 1.45;
+          state.winHold = 1.55;
         }
         state.nextGateIn = Math.max(state.nextGateIn || 0, state.winHold);
       }
 
       if (typeof jump === "function") {
-        var rawJump = jump;
         jump = function() {
           if (!state.answered || !state.gate) return;
           if (state.didJump) return;
@@ -60,7 +57,7 @@
           state.didJump = true;
           state.sliding = false;
           state.dancing = false;
-          state.heroVy = -920;
+          state.heroVy = -980;
           state.grounded = false;
           state.jumpArc = true;
           state.flipAng = 0;
@@ -73,9 +70,7 @@
         chooseAnswer = function(i) {
           var was = state.answered;
           rawChoose(i);
-          if (state.answered && !was && state.screen === "play") {
-            beginWin();
-          }
+          if (state.answered && !was && state.screen === "play") beginWin();
         };
       }
 
@@ -84,8 +79,8 @@
         smashGate = function(success) {
           rawSmash(success);
           if (success) {
-            state.nextGateIn = Math.max(state.nextGateIn || 0, 1.25);
-            state.winHold = Math.max(state.winHold || 0, 0.85);
+            state.nextGateIn = Math.max(state.nextGateIn || 0, 1.15);
+            state.winHold = Math.max(state.winHold || 0, 0.7);
             state.rushing = false;
           }
         };
@@ -100,6 +95,7 @@
           state.buddyRush = false;
           state.rushing = false;
           state.winHold = 0;
+          state.gateParked = false;
           return rawSpawn();
         };
       }
@@ -116,23 +112,21 @@
           if (!state.gate) return;
 
           if (state.answered && !state.gate.smashed) {
-            parkGate();
             var m = state.winMove;
             if (m === "beam") {
               state.beamUp = true;
-              if ((state.beamT || 0) > 0.55 && !state.gate.smashed) smashGate(true);
+              if ((state.beamT || 0) > 0.55) smashGate(true);
             } else if (m === "buddy") {
               state.buddyRush = true;
-              var home = state.buddyX != null ? state.buddyX : 112;
-              if (state.buddyX == null) state.buddyX = home;
-              if (state.buddyX >= state.gate.x - 40) smashGate(true);
+              if (state.buddyX == null) state.buddyX = 112;
+              if (state.buddyX >= state.gate.x - 36) smashGate(true);
             } else {
               state.rushing = true;
               if (!state.didJump) jump();
-              if (state.didJump && (state.heroY || 0) > -8 && state.jumpArc === false) {
-                if (!state.gate.smashed) smashGate(true);
-              } else if ((state.winHold || 0) < 0.55 && !state.gate.smashed) {
-                smashGate(true);
+              if (state.didJump && state.gate) {
+                var targetX = (state.gate.x + 40) / 2;
+                state.heroX += (targetX - (state.heroX || 180)) * Math.min(1, dt * 5.5);
+                if (visHero() >= state.gate.x - 8) smashGate(true);
               }
             }
           }
