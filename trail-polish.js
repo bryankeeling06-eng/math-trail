@@ -8,6 +8,13 @@
       function snowTrail() {
         return (state.biome || 0) === 7;
       }
+      function pondTrail() {
+        return (state.biome || 0) === 2;
+      }
+
+      if (typeof WIN_MOVES !== "undefined" && WIN_MOVES.indexOf("beam") < 0) {
+        WIN_MOVES.push("beam");
+      }
 
       function shipX() {
         var x = 108;
@@ -40,6 +47,26 @@
         var rawBuddy = drawBuddy;
         drawBuddy = function(x, gy) {
           if (inSpace()) { drawBuddyInShip(gy); return; }
+          if (!pondTrail()) state.breadToss = null;
+          var pondX = pondScreenX();
+          var hidePondBits = !pondTrail() || pondX < -180 || pondX > ((typeof viewW === "function") ? viewW() : 900) + 180;
+          if (hidePondBits) {
+            var rawFill = ctx.fill.bind(ctx);
+            var rawFillRect = ctx.fillRect.bind(ctx);
+            ctx.fill = function() {
+              var c = String(ctx.fillStyle || "").toLowerCase();
+              if (c === "#f4c430" || c === "#f1c40f" || c === "#fff6d8" || c === "#e8d5a3" || c === "#e67e22") return;
+              return rawFill();
+            };
+            ctx.fillRect = function(rx, ry, rw, rh) {
+              if (rw <= 12 && rh <= 8) return;
+              return rawFillRect(rx, ry, rw, rh);
+            };
+            rawBuddy(x, gy);
+            ctx.fill = rawFill;
+            ctx.fillRect = rawFillRect;
+            return;
+          }
           rawBuddy(x, gy);
         };
       }
@@ -53,7 +80,6 @@
         var x = Math.sin(n * 127.1 + 311.7) * 43758.5453;
         return x - Math.floor(x);
       }
-
       function sprinkleHills(w, h, gy, scroll) {
         var cols = ["#ff4d8d", "#fff7fb", "#7dffb3", "#ffd166", "#6ec6ff", "#c56cff", "#ff8ab8", "#ff6b6b", "#ffe66d", "#ffffff"];
         var layers = [
@@ -81,26 +107,19 @@
           }
         }
       }
-
       function drawSuckers(w, gy, scroll) {
         var heads = ["#ff4d8d", "#7dffb3", "#6ec6ff", "#c56cff", "#ffd166"];
         for (var i = 0; i < 5; i++) {
           var x = ((140 + i * 210 - scroll * 0.55) % (w + 80) + (w + 80)) % (w + 80) - 20;
-          ctx.fillStyle = "#fff7fb";
-          ctx.fillRect(x - 3, gy - 46, 6, 46);
+          ctx.fillStyle = "#fff7fb"; ctx.fillRect(x - 3, gy - 46, 6, 46);
           ctx.fillStyle = heads[i % heads.length];
           ctx.beginPath(); ctx.arc(x, gy - 58, 16, 0, Math.PI * 2); ctx.fill();
-          ctx.strokeStyle = "rgba(255,255,255,0.5)"; ctx.lineWidth = 3;
-          ctx.beginPath(); ctx.arc(x, gy - 58, 8, 0.2, 2.2); ctx.stroke();
         }
       }
-
       function drawFallingSnow(w, h) {
         if (!state.snowflakes || !state.snowflakes.length) {
           state.snowflakes = [];
-          for (var s = 0; s < 56; s++) {
-            state.snowflakes.push({ x: Math.random() * (w + 40), y: Math.random() * h, r: 1.5 + Math.random() * 2.4, v: 26 + Math.random() * 40, w: 0.4 + Math.random() * 0.8 });
-          }
+          for (var s = 0; s < 56; s++) state.snowflakes.push({ x: Math.random() * (w + 40), y: Math.random() * h, r: 1.5 + Math.random() * 2.4, v: 26 + Math.random() * 40, w: 0.4 + Math.random() * 0.8 });
         }
         ctx.fillStyle = "rgba(255,255,255,0.92)";
         for (var i = 0; i < state.snowflakes.length; i++) {
@@ -108,9 +127,42 @@
           f.y += f.v * 0.016;
           f.x += Math.sin((state.t || 0) * f.w + i) * 0.6;
           if (f.y > h + 8) { f.y = -8; f.x = Math.random() * w; }
-          ctx.beginPath();
-          ctx.arc(((f.x % (w + 20)) + (w + 20)) % (w + 20), f.y, f.r, 0, Math.PI * 2);
-          ctx.fill();
+          ctx.beginPath(); ctx.arc(((f.x % (w + 20)) + (w + 20)) % (w + 20), f.y, f.r, 0, Math.PI * 2); ctx.fill();
+        }
+      }
+
+      function pondScreenX() {
+        if (!pondTrail()) { state.pondOrigin = null; return -9999; }
+        if (state.pondOrigin == null) state.pondOrigin = state.scroll || 0;
+        return 560 - ((state.scroll || 0) - state.pondOrigin) * 0.55;
+      }
+
+      function drawLockedPond(w, gy) {
+        var x = pondScreenX();
+        if (x < -200 || x > w + 200) return;
+        ctx.fillStyle = "#245a38";
+        ctx.beginPath(); ctx.ellipse(x, gy + 22, 168, 38, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#15608a";
+        ctx.beginPath(); ctx.ellipse(x, gy + 18, 150, 28, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#3db7d4";
+        ctx.beginPath(); ctx.ellipse(x - 24, gy + 8, 78, 9, 0, 0, Math.PI * 2); ctx.fill();
+        function duck(dx, dy, flip) {
+          ctx.save(); ctx.translate(dx, dy); ctx.scale(flip, 1);
+          ctx.fillStyle = "#fff6d8"; ctx.beginPath(); ctx.ellipse(0, 2, 16, 8, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#f1c40f"; ctx.beginPath(); ctx.arc(13, -5, 7.5, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#e67e22"; ctx.beginPath(); ctx.moveTo(19, -6); ctx.lineTo(28, -3); ctx.lineTo(19, 0); ctx.fill();
+          ctx.restore();
+        }
+        duck(x - 40, gy + 6 + Math.sin((state.t || 0) * 2) * 2, 1);
+        duck(x + 48, gy + 10 + Math.sin((state.t || 0) * 2 + 1.1) * 2, -1);
+        if (state.breadToss) {
+          var p = Math.min(1, Math.max(0, ((state.t || 0) - state.breadToss.start) / 1.15));
+          var bx = state.breadToss.sx + (x - 10 - state.breadToss.sx) * p;
+          var by = state.breadToss.sy + (gy + 8 - state.breadToss.sy) * p - Math.sin(p * Math.PI) * 28;
+          if (p < 1) {
+            ctx.fillStyle = "#e8d5a3";
+            ctx.fillRect(bx, by, 9, 6);
+          }
         }
       }
 
@@ -136,24 +188,12 @@
         ctx.beginPath(); ctx.ellipse(gx, 16, 22, 16, 0, 0, Math.PI * 2); ctx.fill();
         ctx.fillStyle = "#3cb371";
         ctx.beginPath(); ctx.arc(gx - 8, 14, 4, 0, Math.PI * 2); ctx.arc(gx + 8, 14, 4, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#7dffb3";
-        ctx.beginPath(); ctx.arc(gx, 20, 3, 0, Math.PI * 2); ctx.fill();
         ctx.translate(gx, gy - lift);
-        ctx.globalAlpha = fade;
         ctx.fillStyle = "#8b5a2b";
-        if (typeof roundRect === "function") {
-          roundRect(-48, -150, 18, 168, 6); ctx.fill();
-          roundRect(30, -150, 18, 168, 6); ctx.fill();
-          ctx.fillStyle = "#c9843a";
-          roundRect(-54, -168, 108, 36, 10); ctx.fill();
-          ctx.fillStyle = "#fff8e7";
-          roundRect(-70, -128, 140, 70, 12); ctx.fill();
-        } else {
-          ctx.fillRect(-48, -150, 18, 168);
-          ctx.fillRect(30, -150, 18, 168);
-          ctx.fillStyle = "#c9843a"; ctx.fillRect(-54, -168, 108, 36);
-          ctx.fillStyle = "#fff8e7"; ctx.fillRect(-70, -128, 140, 70);
-        }
+        ctx.fillRect(-48, -150, 18, 168);
+        ctx.fillRect(30, -150, 18, 168);
+        ctx.fillStyle = "#c9843a"; ctx.fillRect(-54, -168, 108, 36);
+        ctx.fillStyle = "#fff8e7"; ctx.fillRect(-70, -128, 140, 70);
         if (g.problem) {
           ctx.fillStyle = "#1b2a41";
           ctx.font = "800 22px Nunito, sans-serif";
@@ -174,7 +214,28 @@
       if (typeof drawGround === "function") {
         var rawGround = drawGround;
         drawGround = function(w, h, gy, scroll) {
-          rawGround(w, h, gy, scroll);
+          if (pondTrail()) {
+            var rawFill = ctx.fill.bind(ctx);
+            var rawStroke = ctx.stroke.bind(ctx);
+            ctx.fill = function() {
+              var c = String(ctx.fillStyle || "").toLowerCase();
+              if (c === "#245a38" || c === "#15608a" || c === "#3db7d4" || c === "#fff6d8" || c === "#f1c40f") return;
+              return rawFill();
+            };
+            ctx.stroke = function() {
+              var c = String(ctx.strokeStyle || "").toLowerCase();
+              if (c === "#2e8b3a") return;
+              return rawStroke();
+            };
+            rawGround(w, h, gy, scroll);
+            ctx.fill = rawFill;
+            ctx.stroke = rawStroke;
+            drawLockedPond(w, gy);
+          } else {
+            state.pondOrigin = null;
+            state.breadToss = null;
+            rawGround(w, h, gy, scroll);
+          }
           if (candyTrail()) drawSuckers(w, gy, scroll);
           if (snowTrail()) drawFallingSnow(w, h);
         };
@@ -183,10 +244,7 @@
       if (typeof drawGate === "function") {
         var rawGate = drawGate;
         drawGate = function(g, gy) {
-          if (inSpace() && (state.beamUp || (g && g.smashed && state.answered))) {
-            drawAlienBeam(g, gy);
-            return;
-          }
+          if (state.beamUp && g) { drawAlienBeam(g, gy); return; }
           rawGate(g, gy);
         };
       }
@@ -195,16 +253,15 @@
         var rawChoose = chooseAnswer;
         chooseAnswer = function(i) {
           rawChoose(i);
-          if (inSpace() && state.answered) {
+          if (state.answered && state.winMove === "beam") {
             state.rushing = false;
             state.dancing = false;
             state.sliding = false;
             state.beamUp = true;
             state.beamT = 0;
-            if (state.gate) {
-              state.gate.smashed = true;
-              state.gate.smashT = 0;
-            }
+            if (state.gate) { state.gate.smashed = true; state.gate.smashT = 0; }
+          } else if (state.winMove !== "beam") {
+            state.beamUp = false;
           }
         };
       }
@@ -212,7 +269,7 @@
       if (typeof smashGate === "function") {
         var rawSmash = smashGate;
         smashGate = function(success) {
-          if (inSpace() && success) {
+          if (success && state.winMove === "beam") {
             state.beamUp = true;
             state.beamT = 0;
             state.rushing = false;
@@ -223,7 +280,6 @@
         };
       }
 
-      var lastT = 0;
       if (typeof requestAnimationFrame === "function") {
         (function tickBeam() {
           if (state && state.beamUp) {
