@@ -172,13 +172,18 @@
         ctx.beginPath(); ctx.arc(x - 5 + look, y - 59 + bob, 0.9, 0, Math.PI * 2); ctx.arc(x + 7 + look, y - 59 + bob, 0.9, 0, Math.PI * 2); ctx.fill();
         ctx.fillStyle = "#f4a259";
         ctx.beginPath();
-        ctx.moveTo(x - 5, y - 52 + bob);
-        ctx.lineTo(x + 12, y - 50 + bob);
-        ctx.lineTo(x - 5, y - 47 + bob);
+        ctx.moveTo(x - 4.5, y - 51.5 + bob);
+        ctx.lineTo(x + 4.5, y - 51.5 + bob);
+        ctx.lineTo(x, y - 43 + bob);
         ctx.closePath();
         ctx.fill();
         ctx.fillStyle = "#e67e22";
-        ctx.beginPath(); ctx.ellipse(x + 6, y - 50 + bob, 6, 2.2, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(x - 3, y - 51 + bob);
+        ctx.lineTo(x + 3, y - 51 + bob);
+        ctx.lineTo(x, y - 47 + bob);
+        ctx.closePath();
+        ctx.fill();
         ctx.restore();
       }
 
