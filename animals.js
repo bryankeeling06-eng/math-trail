@@ -29,7 +29,6 @@
       }
 
       function beginSpin(x, gy) {
-        ctx.save();
         if (!state.jumpArc) return;
         var ang = state.flipAng || 0;
         if (state.winMove === "cartwheel") ang = state.flipAng * 1.15;
@@ -146,11 +145,49 @@
         ctx.restore();
       }
 
+      function drawPenguin(x, gy) {
+        var p = pose(x, gy), y = p.y, bob = p.bob, look = p.look;
+        var waddle = Math.sin((state.runPhase || 0) * 2) * 3;
+        shadow(x, gy);
+        ctx.save();
+        ctx.translate(p.dance + waddle * 0.2, 0);
+        beginSpin(x, gy);
+        ctx.fillStyle = "#e67e22";
+        ctx.beginPath(); ctx.ellipse(x - 9, y - 5 + bob, 8, 3.4, 0.15, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(x + 9, y - 5 + bob, 8, 3.4, -0.15, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#1b2430";
+        ctx.beginPath(); ctx.ellipse(x, y - 32 + bob, 20, 28, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#f7f4ee";
+        ctx.beginPath(); ctx.ellipse(x + 1, y - 28 + bob, 13, 20, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#1b2430";
+        ctx.beginPath(); ctx.ellipse(x - 20, y - 34 + bob, 7, 14, 0.45, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(x + 20, y - 34 + bob, 7, 14, -0.45, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(x, y - 62 + bob, 16, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#f7f4ee";
+        ctx.beginPath(); ctx.ellipse(x - 6, y - 58 + bob, 6, 7, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(x + 6, y - 58 + bob, 6, 7, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#1b2a41";
+        ctx.beginPath(); ctx.arc(x - 6 + look, y - 58 + bob, 2.5, 0, Math.PI * 2); ctx.arc(x + 6 + look, y - 58 + bob, 2.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#fff";
+        ctx.beginPath(); ctx.arc(x - 5 + look, y - 59 + bob, 0.9, 0, Math.PI * 2); ctx.arc(x + 7 + look, y - 59 + bob, 0.9, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#f4a259";
+        ctx.beginPath();
+        ctx.moveTo(x - 5, y - 52 + bob);
+        ctx.lineTo(x + 12, y - 50 + bob);
+        ctx.lineTo(x - 5, y - 47 + bob);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = "#e67e22";
+        ctx.beginPath(); ctx.ellipse(x + 6, y - 50 + bob, 6, 2.2, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+      }
+
       drawHero = function(x, gy) {
         var id = who();
         if (id === "bunny") { drawBunny(x, gy); return; }
         if (id === "frog") { drawFrog(x, gy); return; }
         if (id === "owl") { drawOwl(x, gy); return; }
+        if (id === "penguin") { drawPenguin(x, gy); return; }
         raw(x, gy);
       };
     })();
