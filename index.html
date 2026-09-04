@@ -190,7 +190,8 @@
       loadText("shop-patch.js").catch(function () { return ""; }),
       loadText("props-fix.js").catch(function () { return ""; }),
       loadText("trail-polish.js").catch(function () { return ""; }),
-      loadText("animals.js").catch(function () { return ""; })
+      loadText("animals.js").catch(function () { return ""; }),
+      loadText("daily-trail.js").catch(function () { return ""; })
     ]).then(function (parts) {
       (0, eval)(parts.map(clean).join("\n"));
     }).catch(function () {
