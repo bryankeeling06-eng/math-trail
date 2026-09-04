@@ -17,7 +17,7 @@
         { id: "none", name: "No hat", price: 0, emo: "✨", acc: "none" },
         { id: "cape", name: "Super Cape", price: 10, emo: "🦸", acc: "cape" },
         { id: "starcape", name: "Star Cape", price: 14, emo: "🌟", acc: "starcape" },
-        { id: "picnic", name: "Picnic Hat", price: 12, emo: "🧺", acc: "picnic" },
+        { id: "picnic", name: "Picnic Hat", price: 12, emo: "🧿", acc: "picnic" },
         { id: "straw", name: "Barn Hat", price: 12, emo: "👒", acc: "straw" },
         { id: "firefly", name: "Firefly Jar", price: 16, emo: "🫢", acc: "firefly", unlock: 10 },
         { id: "backpack", name: "Trail Pack", price: 16, emo: "🎒", acc: "backpack" },
@@ -84,22 +84,21 @@
       window.buyOrWearHat = function(id) {
         var it = findItem(HATS, id);
         if (!it) return;
-        var owned = state.ownedHats.indexOf(id) !== -1;
-        if (!owned) {
-          if ((it.unlock || 0) > (state.bestLevel || 1)) {
-            showToast("Reach level " + it.unlock + " first");
-            return;
-          }
-          if (state.stars < it.price) {
-            showToast("Need " + it.price + " stars");
-            return;
-          }
-          state.stars -= it.price;
-          state.ownedHats.push(id);
-          showToast("Bought " + it.name + "!");
-        }
+        var owned = state.ownedHats.indexOf(id) !== -1 || id === "none";
         state.hat = id;
-        writeSave({});
+        if (!owned && id !== "none") {
+          if ((it.unlock || 0) > (state.bestLevel || 1)) {
+            showToast("Preview · unlock at level " + it.unlock);
+          } else if (state.stars < it.price) {
+            showToast("Preview · need " + it.price + " stars to keep");
+          } else {
+            state.stars -= it.price;
+            state.ownedHats.push(id);
+            showToast("Bought " + it.name + "!");
+            owned = true;
+          }
+        }
+        if (owned) writeSave({});
         updateHud();
         renderShop();
       };
@@ -124,7 +123,7 @@
           var btn = document.createElement("button");
           btn.type = "button";
           btn.className = "item" + (owned ? " owned" : "") + (wearing ? " wearing" : "") + (locked ? " locked" : "");
-          var label = locked ? ("Unlock at Lv " + need) : wearing ? "Wearing" : owned ? "Wear" : (it.price === 0 ? "Free" : "Buy ⭐" + it.price);
+          var label = locked ? ("Preview · Lv " + need) : wearing ? "Wearing" : owned ? "Wear" : (it.price === 0 ? "Free" : "Buy ⭐" + it.price);
           btn.innerHTML = '<div class="emo">' + it.emo + '</div><div class="nm">' + it.name + '</div><div class="pr">' + label + '</div>';
           if (!isHat && owned) {
             var row = document.createElement("div");
