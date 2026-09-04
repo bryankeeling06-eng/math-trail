@@ -19,6 +19,10 @@
         return (state.biome || 0) === 2 || placeId() === "pond";
       }
 
+      if (typeof WIN_MOVES !== "undefined" && WIN_MOVES.indexOf("beam") < 0) {
+        WIN_MOVES.push("beam");
+      }
+
       function shipX() {
         return 92;
       }
@@ -272,7 +276,7 @@
       }
 
       function startBeam() {
-        if (!inSpace() || !state.answered) return false;
+        if (!state.answered || state.winMove !== "beam") return false;
         state.rushing = false;
         state.buddyRush = false;
         state.dancing = false;
