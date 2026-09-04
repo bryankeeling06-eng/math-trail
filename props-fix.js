@@ -52,29 +52,20 @@
 
       function drawGroundedTree(tx, gy) {
         var base = gy + 6;
-        ctx.fillStyle = "#6b3a16";
-        ctx.fillRect(tx - 6, base - 22, 12, 22);
+        ctx.fillStyle = "#6b3a16"; ctx.fillRect(tx - 6, base - 22, 12, 22);
         ctx.fillStyle = "#1b6b34";
-        ctx.beginPath();
-        ctx.moveTo(tx, base - 78); ctx.lineTo(tx + 40, base - 22); ctx.lineTo(tx - 40, base - 22); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(tx, base - 78); ctx.lineTo(tx + 40, base - 22); ctx.lineTo(tx - 40, base - 22); ctx.closePath(); ctx.fill();
         ctx.fillStyle = "#218c44";
-        ctx.beginPath();
-        ctx.moveTo(tx, base - 102); ctx.lineTo(tx + 30, base - 52); ctx.lineTo(tx - 30, base - 52); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(tx, base - 102); ctx.lineTo(tx + 30, base - 52); ctx.lineTo(tx - 30, base - 52); ctx.closePath(); ctx.fill();
         ctx.fillStyle = "#2e8b3a";
-        ctx.beginPath();
-        ctx.moveTo(tx, base - 122); ctx.lineTo(tx + 20, base - 80); ctx.lineTo(tx - 20, base - 80); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(tx, base - 122); ctx.lineTo(tx + 20, base - 80); ctx.lineTo(tx - 20, base - 80); ctx.closePath(); ctx.fill();
         ctx.fillStyle = "#ffffff";
         ctx.beginPath();
         ctx.ellipse(tx, base - 78, 18, 5, 0, 0, Math.PI * 2);
         ctx.ellipse(tx, base - 52, 26, 5, 0, 0, Math.PI * 2);
         ctx.ellipse(tx, base - 24, 34, 5, 0, 0, Math.PI * 2);
         ctx.fill();
-        var baubles = [
-          [tx - 16, base - 40, "#e74c3c"], [tx + 14, base - 36, "#f4c430"],
-          [tx - 6, base - 58, "#6ec6ff"], [tx + 12, base - 64, "#ff4d8d"],
-          [tx - 10, base - 88, "#ffd166"], [tx + 8, base - 92, "#e74c3c"],
-          [tx + 18, base - 48, "#7dffb3"], [tx - 22, base - 32, "#c56cff"]
-        ];
+        var baubles = [[tx-16,base-40,"#e74c3c"],[tx+14,base-36,"#f4c430"],[tx-6,base-58,"#6ec6ff"],[tx+12,base-64,"#ff4d8d"],[tx-10,base-88,"#ffd166"],[tx+8,base-92,"#e74c3c"],[tx+18,base-48,"#7dffb3"],[tx-22,base-32,"#c56cff"]];
         for (var i = 0; i < baubles.length; i++) {
           ctx.fillStyle = baubles[i][2];
           ctx.beginPath(); ctx.arc(baubles[i][0], baubles[i][1], 3.4, 0, Math.PI * 2); ctx.fill();
@@ -115,36 +106,44 @@
         crow(x + 14, gy - 128, -1);
       }
 
+      var PROP_COLS = {
+        "#8b5a2b":1,"#c45a2a":1,"#6b3a16":1,"#d4a017":1,"#ffe0bd":1,"#c9843a":1,
+        "#1b6b34":1,"#ffd166":1,"#c0392b":1,"#e67e22":1,"#1b1b1b":1,"#1a1a1a":1
+      };
+
       drawGround = function(w, h, gy, scroll) {
         var b = state.biome || 0;
-        if (b !== 5 && b !== 7) {
-          prev(w, h, gy, scroll);
-          return;
-        }
-        var mark = b === 7 ? markX(w, scroll, 700) : markX(w, scroll, 760);
+        if (b !== 5 && b !== 7) { prev(w, h, gy, scroll); return; }
         var rawFill = ctx.fill.bind(ctx);
         var rawFillRect = ctx.fillRect.bind(ctx);
         var rawStroke = ctx.stroke.bind(ctx);
         var rawArc = ctx.arc.bind(ctx);
-        var skip = false;
+        var rawEllipse = ctx.ellipse.bind(ctx);
+        var hide = false;
+        function col() { return String(ctx.fillStyle || "").toLowerCase(); }
         ctx.arc = function(x, y, r, a0, a1, ccw) {
-          if (r >= 8 && Math.abs(x - mark) < 70 && y < gy + 10) skip = true;
-          if (b === 5 && r >= 8 && Math.abs(x - mark) < 80 && y < gy + 10) skip = true;
+          if (r >= 7 && y < gy + 6) hide = true;
           return rawArc(x, y, r, a0, a1, ccw);
         };
+        ctx.ellipse = function(x, y, rx, ry, rot, a0, a1, ccw) {
+          if (rx >= 10 && y < gy) hide = true;
+          return rawEllipse(x, y, rx, ry, rot, a0, a1, ccw);
+        };
         ctx.fill = function() {
-          var col = String(ctx.fillStyle || "").toLowerCase();
-          if (skip) { skip = false; return; }
-          if (b === 7 && (col === "#1b6b34" || col === "#ffd166")) return;
-          if (b === 5 && (col === "#8b5a2b" || col === "#c45a2a" || col === "#d4a017" || col === "#ffe0bd")) return;
+          var c = col();
+          if (hide || PROP_COLS[c] || (b === 7 && (c === "#fff" || c === "#ffffff" || c.indexOf("255, 255, 255") !== -1) && hide)) {
+            hide = false;
+            return;
+          }
+          hide = false;
           return rawFill();
         };
         ctx.fillRect = function(x, y, rw, rh) {
-          if (y + rh < gy + 12 && Math.abs(x - mark) < 90) return;
+          if (y < gy && rh >= 6 && rw >= 6) return;
           return rawFillRect(x, y, rw, rh);
         };
         ctx.stroke = function() {
-          if (skip) { skip = false; return; }
+          if (hide || PROP_COLS[String(ctx.strokeStyle || "").toLowerCase()]) { hide = false; return; }
           return rawStroke();
         };
         prev(w, h, gy, scroll);
@@ -152,11 +151,13 @@
         ctx.fillRect = rawFillRect;
         ctx.stroke = rawStroke;
         ctx.arc = rawArc;
+        ctx.ellipse = rawEllipse;
         if (b === 7) {
-          drawOneSnowman(mark, gy);
-          drawGroundedTree(mark - 95, gy);
+          var smx = markX(w, scroll, 700);
+          drawOneSnowman(smx, gy);
+          drawGroundedTree(smx - 95, gy);
         } else {
-          drawOneScarecrow(mark, gy);
+          drawOneScarecrow(markX(w, scroll, 760), gy);
         }
       };
     })();
