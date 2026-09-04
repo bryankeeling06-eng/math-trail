@@ -5,15 +5,11 @@
         for (var i = 0; i < MOVES.length; i++) WIN_MOVES.push(MOVES[i]);
       }
 
-      function visHero() {
-        return (state.heroX || 180) * 2;
-      }
-
       function parkGateOnce() {
         if (!state.gate || state.gate.smashed || state.gateParked) return;
         var w = (typeof viewW === "function") ? viewW() : 800;
-        var hx = visHero();
-        state.gate.x = Math.min(w * 0.72, hx + 170);
+        var hx = state.heroX || 180;
+        state.gate.x = Math.min(w * 0.7, hx + 160);
         state.gateParked = true;
       }
 
@@ -25,6 +21,7 @@
           state.winMove = m;
         }
         state.gateParked = false;
+        state.leapX = 0;
         parkGateOnce();
         state.didJump = false;
         state.jumpArc = false;
@@ -44,7 +41,7 @@
           state.winHold = 1.25;
         } else {
           state.rushing = true;
-          state.winHold = 1.55;
+          state.winHold = 1.6;
         }
         state.nextGateIn = Math.max(state.nextGateIn || 0, state.winHold);
       }
@@ -65,6 +62,19 @@
         };
       }
 
+      if (typeof drawHero === "function") {
+        var rawHero = drawHero;
+        drawHero = function(x, gy) {
+          rawHero(x + (state.leapX || 0), gy);
+        };
+      }
+      if (typeof drawBird === "function") {
+        var rawBird = drawBird;
+        drawBird = function(x, gy) {
+          rawBird(x + (state.leapX || 0), gy);
+        };
+      }
+
       if (typeof chooseAnswer === "function") {
         var rawChoose = chooseAnswer;
         chooseAnswer = function(i) {
@@ -81,7 +91,6 @@
           if (success) {
             state.nextGateIn = Math.max(state.nextGateIn || 0, 1.15);
             state.winHold = Math.max(state.winHold || 0, 0.7);
-            state.rushing = false;
           }
         };
       }
@@ -96,6 +105,7 @@
           state.rushing = false;
           state.winHold = 0;
           state.gateParked = false;
+          state.leapX = 0;
           return rawSpawn();
         };
       }
@@ -121,14 +131,14 @@
               if (state.buddyX == null) state.buddyX = 112;
               if (state.buddyX >= state.gate.x - 36) smashGate(true);
             } else {
-              state.rushing = true;
               if (!state.didJump) jump();
-              if (state.didJump && state.gate) {
-                var targetX = (state.gate.x + 40) / 2;
-                state.heroX += (targetX - (state.heroX || 180)) * Math.min(1, dt * 5.5);
-                if (visHero() >= state.gate.x - 8) smashGate(true);
-              }
+              var need = Math.max(120, (state.gate.x || 400) - (state.heroX || 180) + 30);
+              state.leapX = Math.min(need, (state.leapX || 0) + 280 * dt);
+              var at = (state.heroX || 180) + (state.leapX || 0);
+              if (at >= state.gate.x - 10) smashGate(true);
             }
+          } else if ((state.leapX || 0) > 0 && (!state.answered || (state.winHold || 0) <= 0)) {
+            state.leapX = Math.max(0, state.leapX - 420 * dt);
           }
 
           if (state.gate && state.gate.smashed && (state.winHold || 0) > 0) {
