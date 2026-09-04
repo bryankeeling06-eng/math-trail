@@ -4,11 +4,7 @@
         { id: "picnic", name: "Picnic Spot", goal: "Duck Pond", arrive: "Picnic time!" },
         { id: "pond", name: "Duck Pond", goal: "Treehouse", arrive: "The ducks say hi!" },
         { id: "treehouse", name: "Treehouse", goal: "Red Barn", arrive: "Up in the treehouse!" },
-        { id: "barn", name: "Red Barn", goal: "Pumpkin Patch", arrive: "The red barn!" },
-        { id: "pumpkin", name: "Pumpkin Patch", goal: "Candy Trail", arrive: "Pumpkins everywhere!" },
-        { id: "candy", name: "Candy Trail", goal: "Snowy Hill", arrive: "Sweet candy trail!" },
-        { id: "snow", name: "Snowy Hill", goal: "Firefly Night", arrive: "Snow day!" },
-        { id: "night", name: "Firefly Night", goal: "Outer Space", arrive: "Fireflies!" },
+        { id: "barn", name: "Red Barn", goal: "Outer Space", arrive: "The red barn!" },
         { id: "space", name: "Outer Space", goal: "Sunny Hills", arrive: "Blast off!" }
       ];
       if (typeof PLACES !== "undefined") {
@@ -20,8 +16,6 @@
       var jump = document.getElementById("trailJump");
       if (jump && jump.parentNode) jump.parentNode.removeChild(jump);
       if (typeof refreshGoal === "function") refreshGoal();
-
-      drawLandmark = function() {};
 
       if (!state.snowflakes) {
         state.snowflakes = [];
@@ -106,17 +100,17 @@
         var rawDrawTree = drawTree;
         drawTree = function(t, scroll, gy) {
           var b = state.biome || 0;
-          if (b === 6) { drawLollipopTree(t, scroll, gy); return; }
-          if (b === 9) { drawAsteroid(t, scroll, gy); return; }
+          if (b === 5) { drawLollipopTree(t, scroll, gy); return; }
+          if (b === 5) { drawAsteroid(t, scroll, gy); return; }
           rawDrawTree(t, scroll, gy);
-          if (b === 7) drawSnowOnTree(t, scroll, gy);
+          if (b === 5) drawSnowOnTree(t, scroll, gy);
         };
       }
 
       if (typeof biomeTheme === "function") {
         var prevTheme = biomeTheme;
         biomeTheme = function() {
-          if ((state.biome || 0) === 9 || state.launching) {
+          if ((state.biome || 0) === 5 || state.launching) {
             return { sky0: "#050816", sky1: "#10183a", sky2: "#1a1448", sun: "#f4f0c8", hillA: "#141428", hillB: "#1c1c38", grass: "#12122a", grassTop: "#1a1a36", dirt: "#0a0a18", night: true };
           }
           return prevTheme();
@@ -334,14 +328,14 @@
       if (typeof drawGround === "function") {
         var rawGround = drawGround;
         drawGround = function(w, h, gy, scroll) {
-          if ((state.biome || 0) === 9 || (state.launching && state.launch > 3.2)) {
+          if ((state.biome || 0) === 5 || (state.launching && state.launch > 3.2)) {
             drawSpaceScene(w, h, gy, scroll);
           } else {
             rawGround(w, h, gy, scroll);
           }
           var b = state.biome || 0;
           if (b === 5) dressScarecrow(w, h, gy, scroll);
-          if (b === 7) {
+          if (b === 5) {
             dressSnowman(w, h, gy, scroll);
             drawFallingSnow(w, h, 0.016);
           }
@@ -362,8 +356,8 @@
           };
           innerHero(x, gy);
           ctx.ellipse = rawEll;
-          var suited = !!state.suited || (state.biome === 9);
-          var jet = !!state.hasJet || (state.biome === 9);
+          var suited = !!state.suited || (state.biome === 5);
+          var jet = !!state.hasJet || (state.biome === 5);
           var blast = !!state.blasting || (state.launching && state.launch > 3.4);
           var dropSuit = state.suitY != null ? state.suitY : 0;
           var dropJet = state.jetY != null ? state.jetY : 0;
@@ -403,7 +397,7 @@
       if (typeof tickTrail === "function" && typeof bump === "function") {
         var rawTick = tickTrail;
         tickTrail = function(dt) {
-          if (state.biome === 7 && state.snowflakes) {
+          if (state.biome === 5 && state.snowflakes) {
             var h = (typeof viewH === "function") ? viewH() : 500;
             var w = (typeof viewW === "function") ? viewW() : 800;
             for (var i = 0; i < state.snowflakes.length; i++) {
@@ -440,7 +434,7 @@
               state.heroY = 0;
               state.suited = true;
               state.hasJet = true;
-              state.biome = 9;
+              state.biome = 5;
               if (state.holdSpeed != null) state.speed = state.holdSpeed;
               else state.speed = (typeof speedForLevel === "function") ? speedForLevel(state.level || 1) : 88;
               state.holdSpeed = null;
@@ -451,7 +445,7 @@
             if (pn) pn.style.visibility = "hidden";
           }
           rawTick(dt);
-          if ((state.biome || 0) !== 9 && !state.launching) {
+          if ((state.biome || 0) !== 5 && !state.launching) {
             state.suited = false;
             state.hasJet = false;
             state.blasting = false;
