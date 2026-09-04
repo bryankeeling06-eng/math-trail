@@ -73,25 +73,30 @@
     .muted { font-size:13px; opacity:0.65; margin-top:10px; }
     .stamps { margin:8px 0 14px; font-size:15px; font-weight:700; }
     @media (max-height: 560px) {
-      .overlay { padding: 8px; }
-      .menu, .endcard {
+      .overlay {
+        align-items: flex-end;
+        justify-content: center;
+        padding: 8px 10px 8px 0;
+      }
+      .menu, .endcard, .shop {
         padding: 10px 12px;
-        width: min(360px, 86%);
-        max-height: 92%;
+        width: min(280px, 48%);
+        max-height: 86%;
         overflow: auto;
         border-radius: 16px;
+        margin-right: 6px;
       }
-      .menu h1, .endcard h1 { font-size: 24px; margin: 0 0 2px; }
-      .tag { margin: 0 0 6px; font-size: 13px; }
+      .menu h1, .endcard h1, .shop h1 { font-size: 22px !important; margin: 0 0 2px; }
+      .tag { margin: 0 0 6px; font-size: 12px; }
       .modes { margin: 4px 0 8px; gap: 6px; }
-      .mode { padding: 4px 2px; font-size: 12px; border-radius: 10px; }
-      .mode span { font-size: 16px; margin-bottom: 0; }
-      .go, .again { font-size: 16px; padding: 8px; box-shadow: 0 4px 0 #1e7a32; }
-      .shopBtn { font-size: 15px; padding: 8px; margin-top: 6px; }
+      .mode { padding: 4px 2px; font-size: 11px; border-radius: 10px; }
+      .mode span { font-size: 15px; margin-bottom: 0; }
+      .go, .again { font-size: 15px; padding: 8px; box-shadow: 0 4px 0 #1e7a32; }
+      .shopBtn { font-size: 14px; padding: 8px; margin-top: 6px; }
       .how, .muted { display: none; }
       #starBank { margin: 6px 0 0 !important; }
       #continueBtn { margin-top: 6px !important; }
-      .shop { padding: 10px; max-height: 92%; }
+      .shopGrid { max-height: 42vh; }
     }
   </style>
 </head>
