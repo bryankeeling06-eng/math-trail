@@ -66,12 +66,21 @@
       }
 
       drawGround = function(w, h, gy, scroll) {
-        prev(w, h, gy, scroll);
         var b = state.biome || 0;
-        var span = w + 280;
         if (b === 7) {
+          var rawFill = ctx.fill.bind(ctx);
+          ctx.fill = function() {
+            var col = String(ctx.fillStyle || "").toLowerCase();
+            if (col === "#1b6b34" || col === "#ffd166") return;
+            return rawFill();
+          };
+          prev(w, h, gy, scroll);
+          ctx.fill = rawFill;
+          var span = w + 280;
           var smx = ((700 - scroll * 0.55) % span + span) % span - 80;
           drawGroundedTree(smx - 95, gy);
+          return;
         }
+        prev(w, h, gy, scroll);
       };
     })();
