@@ -20,10 +20,7 @@
       }
 
       function shipX() {
-        var x = 108;
-        if (state.heroX) x = Math.max(84, state.heroX - 86);
-        if (state.gate && !state.gate.smashed && !state.beamUp) x = Math.min(x, state.gate.x - 120);
-        return Math.max(70, x);
+        return 92;
       }
 
       function drawBuddyInShip(gy) {
@@ -275,8 +272,9 @@
       }
 
       function startBeam() {
-        if (!inSpace()) return false;
+        if (!inSpace() || !state.answered) return false;
         state.rushing = false;
+        state.buddyRush = false;
         state.dancing = false;
         state.sliding = false;
         state.jumpArc = false;
@@ -285,13 +283,23 @@
         return true;
       }
 
+      if (typeof spawnGate === "function") {
+        var rawSpawn = spawnGate;
+        spawnGate = function() {
+          state.beamUp = false;
+          state.beamT = 0;
+          state.buddyRush = false;
+          return rawSpawn();
+        };
+      }
+
       if (typeof chooseAnswer === "function") {
         var rawChoose = chooseAnswer;
         chooseAnswer = function(i) {
           rawChoose(i);
           if (state.answered && state.screen === "play") {
             if (startBeam()) {
-              if (typeof smashGate === "function" && state.gate && !state.gate.smashT) smashGate(true);
+              if (typeof smashGate === "function" && state.gate && !state.gate.smashed) smashGate(true);
             } else {
               state.beamUp = false;
             }
@@ -302,9 +310,17 @@
       if (typeof smashGate === "function") {
         var rawSmash = smashGate;
         smashGate = function(success) {
-          if (success) startBeam();
+          if (success && state.answered) startBeam();
           rawSmash(success);
           if (success) state.nextGateIn = Math.max(state.nextGateIn || 0, 1.6);
+        };
+      }
+
+      if (typeof tickTrail === "function") {
+        var rawPolishTick = tickTrail;
+        tickTrail = function(dt) {
+          if (!state.answered) state.buddyRush = false;
+          rawPolishTick(dt);
         };
       }
 
