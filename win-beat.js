@@ -5,12 +5,9 @@
         for (var i = 0; i < MOVES.length; i++) WIN_MOVES.push(MOVES[i]);
       }
 
-      function parkGateOnce() {
-        if (!state.gate || state.gate.smashed || state.gateParked) return;
-        var w = (typeof viewW === "function") ? viewW() : 800;
-        var hx = state.heroX || 180;
-        state.gate.x = Math.min(w * 0.7, hx + 160);
-        state.gateParked = true;
+      function gateDist() {
+        if (!state.gate) return 9999;
+        return state.gate.x - ((state.heroX || 180) + (state.leapX || 0));
       }
 
       function beginWin() {
@@ -20,30 +17,18 @@
           m = MOVES[(state.score || 1) % MOVES.length];
           state.winMove = m;
         }
-        state.gateParked = false;
         state.leapX = 0;
-        parkGateOnce();
         state.didJump = false;
         state.jumpArc = false;
         state.beamUp = false;
         state.beamT = 0;
         state.buddyRush = false;
-        state.rushing = false;
+        state.rushing = true;
         state.sliding = false;
         state.dancing = false;
         state.winT = 0;
-        if (m === "beam") {
-          state.beamUp = true;
-          state.beamT = 0;
-          state.winHold = 1.4;
-        } else if (m === "buddy") {
-          state.buddyRush = true;
-          state.winHold = 1.25;
-        } else {
-          state.rushing = true;
-          state.winHold = 1.6;
-        }
-        state.nextGateIn = Math.max(state.nextGateIn || 0, state.winHold);
+        state.winHold = 2.2;
+        state.nextGateIn = Math.max(state.nextGateIn || 0, 2.2);
       }
 
       if (typeof jump === "function") {
@@ -51,6 +36,7 @@
           if (!state.answered || !state.gate) return;
           if (state.didJump) return;
           if (state.winMove === "beam" || state.winMove === "buddy") return;
+          if (gateDist() > 210) return;
           state.didJump = true;
           state.sliding = false;
           state.dancing = false;
@@ -89,8 +75,8 @@
         smashGate = function(success) {
           rawSmash(success);
           if (success) {
-            state.nextGateIn = Math.max(state.nextGateIn || 0, 1.15);
-            state.winHold = Math.max(state.winHold || 0, 0.7);
+            state.nextGateIn = Math.max(state.nextGateIn || 0, 1.2);
+            state.winHold = Math.max(state.winHold || 0, 0.85);
           }
         };
       }
@@ -98,13 +84,13 @@
       if (typeof spawnGate === "function") {
         var rawSpawn = spawnGate;
         spawnGate = function() {
-          if ((state.winHold || 0) > 0.05) return;
+          if ((state.winHold || 0) > 0.08) return;
+          if (state.gate && !state.gate.smashed) return;
           state.beamUp = false;
           state.beamT = 0;
           state.buddyRush = false;
           state.rushing = false;
           state.winHold = 0;
-          state.gateParked = false;
           state.leapX = 0;
           return rawSpawn();
         };
@@ -123,22 +109,27 @@
 
           if (state.answered && !state.gate.smashed) {
             var m = state.winMove;
+            var dist = gateDist();
             if (m === "beam") {
-              state.beamUp = true;
-              if ((state.beamT || 0) > 0.55) smashGate(true);
+              if (dist < 280) {
+                state.beamUp = true;
+                if ((state.beamT || 0) > 0.45) smashGate(true);
+              }
             } else if (m === "buddy") {
-              state.buddyRush = true;
-              if (state.buddyX == null) state.buddyX = 112;
-              if (state.buddyX >= state.gate.x - 36) smashGate(true);
+              if (dist < 240) {
+                state.buddyRush = true;
+                if (state.buddyX == null) state.buddyX = 112;
+                if (state.buddyX >= state.gate.x - 36) smashGate(true);
+              }
             } else {
-              if (!state.didJump) jump();
-              var need = Math.max(120, (state.gate.x || 400) - (state.heroX || 180) + 30);
-              state.leapX = Math.min(need, (state.leapX || 0) + 280 * dt);
-              var at = (state.heroX || 180) + (state.leapX || 0);
-              if (at >= state.gate.x - 10) smashGate(true);
+              if (dist < 200 && !state.didJump) jump();
+              if (state.didJump) {
+                state.leapX = Math.min(90, (state.leapX || 0) + 220 * dt);
+                if (dist <= 20) smashGate(true);
+              }
             }
-          } else if ((state.leapX || 0) > 0 && (!state.answered || (state.winHold || 0) <= 0)) {
-            state.leapX = Math.max(0, state.leapX - 420 * dt);
+          } else if ((state.leapX || 0) > 0) {
+            state.leapX = Math.max(0, state.leapX - 380 * dt);
           }
 
           if (state.gate && state.gate.smashed && (state.winHold || 0) > 0) {
