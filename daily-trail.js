@@ -66,7 +66,7 @@
     var p = (typeof PLACES !== "undefined" && PLACES[0]) ? PLACES[0] : null;
     var n = (typeof PLACES !== "undefined" && PLACES[1]) ? PLACES[1] : null;
     var el = document.getElementById("runGoal");
-    if (el && p) el.textContent = "Today: " + p.name + (n ? " \u2192 " + n.name : "");
+    if (el && p) el.textContent = "Today: " + p.name + (n ? " -> " + n.name : "");
   }
 
   if (typeof startGame === "function") {
