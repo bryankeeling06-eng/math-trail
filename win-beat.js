@@ -27,8 +27,8 @@
         state.sliding = false;
         state.dancing = false;
         state.winT = 0;
-        state.winHold = 2.2;
-        state.nextGateIn = Math.max(state.nextGateIn || 0, 2.2);
+        state.winHold = 2.4;
+        state.nextGateIn = Math.max(state.nextGateIn || 0, 2.4);
       }
 
       if (typeof jump === "function") {
@@ -36,11 +36,11 @@
           if (!state.answered || !state.gate) return;
           if (state.didJump) return;
           if (state.winMove === "beam" || state.winMove === "buddy") return;
-          if (gateDist() > 210) return;
+          if (gateDist() > 340) return;
           state.didJump = true;
           state.sliding = false;
           state.dancing = false;
-          state.heroVy = -980;
+          state.heroVy = -1080;
           state.grounded = false;
           state.jumpArc = true;
           state.flipAng = 0;
@@ -75,8 +75,8 @@
         smashGate = function(success) {
           rawSmash(success);
           if (success) {
-            state.nextGateIn = Math.max(state.nextGateIn || 0, 1.2);
-            state.winHold = Math.max(state.winHold || 0, 0.85);
+            state.nextGateIn = Math.max(state.nextGateIn || 0, 1.3);
+            state.winHold = Math.max(state.winHold || 0, 0.9);
           }
         };
       }
@@ -99,6 +99,7 @@
       if (typeof tickTrail === "function") {
         var rawTick = tickTrail;
         tickTrail = function(dt) {
+          if (dt > 0.05) dt = 0.05;
           rawTick(dt);
           if (state.screen !== "play") return;
           if ((state.winHold || 0) > 0) {
@@ -111,21 +112,21 @@
             var m = state.winMove;
             var dist = gateDist();
             if (m === "beam") {
-              if (dist < 280) {
+              if (dist < 300) {
                 state.beamUp = true;
-                if ((state.beamT || 0) > 0.45) smashGate(true);
+                if ((state.beamT || 0) > 0.55) smashGate(true);
               }
             } else if (m === "buddy") {
-              if (dist < 240) {
+              if (dist < 280) {
                 state.buddyRush = true;
                 if (state.buddyX == null) state.buddyX = 112;
                 if (state.buddyX >= state.gate.x - 36) smashGate(true);
               }
             } else {
-              if (dist < 200 && !state.didJump) jump();
+              if (dist < 300 && !state.didJump) jump();
               if (state.didJump) {
-                state.leapX = Math.min(90, (state.leapX || 0) + 220 * dt);
-                if (dist <= 20) smashGate(true);
+                state.leapX = Math.min(140, (state.leapX || 0) + 260 * dt);
+                if ((state.heroY || 0) < -40 && dist <= 70) smashGate(true);
               }
             }
           } else if ((state.leapX || 0) > 0) {
