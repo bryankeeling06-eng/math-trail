@@ -28,8 +28,9 @@
     .stones { display:flex; align-items:center; gap:6px; padding:10px 14px; }
     .stone { width:16px; height:16px; border-radius:50%; background:#d5e0ea; box-shadow:inset 0 -2px 0 rgba(0,0,0,0.12); }
     .stone.on { background:#f4c430; box-shadow:0 0 0 3px rgba(244,196,48,0.28); }
-    .place-name { position:absolute; top:160px; left:50%; transform:translateX(-50%); background:var(--panel); border-radius:16px; padding:8px 18px; box-shadow:var(--shadow); font-weight:800; font-size:20px; pointer-events:none; white-space:nowrap; }
-    .problem-banner { position:absolute; top:78px; left:50%; transform:translateX(-50%); background:var(--panel); border-radius:20px; padding:12px 32px; font-family:"Nunito",sans-serif; font-weight:900; font-size:clamp(32px,6.4vw,52px); box-shadow:var(--shadow); min-width:200px; text-align:center; pointer-events:none; opacity:0; }
+    .trail-title { position:absolute; top:58px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:6px; pointer-events:none; z-index:4; max-width:min(640px, calc(100% - 24px)); }
+    .place-name { position:static; transform:none; background:var(--panel); border-radius:999px; padding:5px 14px; box-shadow:var(--shadow); font-weight:800; font-size:15px; white-space:nowrap; color:#5a6b7d; letter-spacing:0.02em; }
+    .problem-banner { position:static; transform:none; background:var(--panel); border-radius:20px; padding:10px 28px; font-family:"Nunito",sans-serif; font-weight:900; font-size:clamp(28px,5.6vw,46px); box-shadow:var(--shadow); min-width:180px; text-align:center; opacity:0; line-height:1.15; }
     .problem-banner.show { opacity:1; }
     .answers { position:absolute; bottom:18px; left:50%; transform:translateX(-50%); display:none; gap:14px; width:min(640px, calc(100% - 24px)); justify-content:center; }
     .answers.show { display:flex; }
@@ -46,7 +47,7 @@
     .mode span { display:block; font-size:28px; margin-bottom:4px; }
     .go, .again { width:100%; border:none; background:linear-gradient(#59d36a,#2fa84a); color:white; font-family:inherit; font-weight:800; font-size:24px; padding:14px; border-radius:16px; cursor:pointer; box-shadow:0 6px 0 #1e7a32; }
     .how { margin-top:14px; font-size:14px; line-height:1.45; opacity:0.78; text-align:left; }
-    .toast { position:absolute; top:46%; left:50%; transform:translate(-50%,-50%); background:#fff7d1; color:#7a4b00; font-weight:800; font-size:28px; padding:10px 22px; border-radius:16px; opacity:0; pointer-events:none; }
+    .toast { position:absolute; top:28%; left:50%; transform:translate(-50%,-50%); background:#fff7d1; color:#7a4b00; font-weight:800; font-size:22px; padding:8px 18px; border-radius:14px; opacity:0; pointer-events:none; z-index:5; }
     .toast.show { opacity:1; }
     .shopBtn { width:100%; margin-top:10px; border:none; background:linear-gradient(#ffb347,#ff8a3c); color:white; font-family:inherit; font-weight:800; font-size:22px; padding:12px; border-radius:16px; cursor:pointer; }
     .shop { background:var(--panel); border-radius:28px; padding:18px; width:min(520px,94%); text-align:center; box-shadow:var(--shadow); max-height:86%; overflow:auto; }
@@ -122,8 +123,10 @@
           <button class="go" id="resumeBtn">Resume</button>
         </div>
       </div>
-      <div class="problem-banner" id="problemBanner">3 + 4</div>
-      <div class="place-name" id="levelChip">Sunny Hills</div>
+      <div class="trail-title" id="trailTitle">
+        <div class="place-name" id="levelChip">Sunny Hills</div>
+        <div class="problem-banner" id="problemBanner">3 + 4</div>
+      </div>
       <div class="toast" id="toast">Level up!</div>
       <div class="answers" id="answers">
         <button class="ans" data-i="0">0</button>
@@ -167,39 +170,6 @@
       </div>
     </div>
   </div>
-  <script>
-    function loadText(url) {
-      return fetch(url, { cache: "no-store" }).then(function (r) {
-        if (!r.ok) throw new Error(url);
-        return r.text();
-      });
-    }
-    function clean(t) {
-      if (!t) return "";
-      var s = String(t).trim();
-      if (s === "see local" || s.charAt(0) === "<") return "";
-      return t;
-    }
-    Promise.all([
-      loadText("game-a.js"),
-      loadText("game-b.js").catch(function () { return loadText("game-b (1).js"); }),
-      loadText("game-c.js").catch(function () { return ""; }),
-      loadText("game-d.js").catch(function () { return ""; }),
-      loadText("game-e.js").catch(function () { return ""; }),
-      loadText("game-f.js").catch(function () { return ""; }),
-      loadText("shop-patch.js").catch(function () { return ""; }),
-      loadText("props-fix.js").catch(function () { return ""; }),
-      loadText("trail-polish.js").catch(function () { return ""; }),
-      loadText("animals.js").catch(function () { return ""; }),
-      loadText("daily-trail.js").catch(function () { return ""; }),
-      loadText("space-sky.js").catch(function () { return ""; }),
-      loadText("win-beat.js").catch(function () { return ""; })
-    ]).then(function (parts) {
-      (0, eval)(parts.map(clean).join("\n"));
-    }).catch(function () {
-      var t = document.getElementById("toast");
-      if (t) { t.textContent = "Game code did not load. Refresh."; t.classList.add("show"); }
-    });
-  </script>
+  <script src="game.js"></script>
 </body>
 </html>
