@@ -76,6 +76,8 @@
     .hidden { display:none !important; }
     .muted { font-size:13px; opacity:0.65; margin-top:10px; }
     .legal { font-size:11px; opacity:0.55; margin-top:8px; font-weight:700; letter-spacing:0.01em; }
+    .pilotBanner { margin: 8px 0 0; padding: 8px 12px; border-radius: 12px; background: #e8f6ff; color: #1b4f72; font-size: 13px; font-weight: 800; }
+    .pilotEnded .tag { margin-bottom: 14px; }
     .stamps { margin:8px 0 14px; font-size:15px; font-weight:700; }
     @media (max-height: 560px) {
       .overlay {
@@ -155,6 +157,7 @@
           <div class="how">A gate rolls toward you with a math problem. Tap the correct answer (or press 1, 2, or 3) before you reach it.</div>
           <div class="muted">Made for ages 5–6 · 3 lives · unhurried pace</div>
           <div class="legal">© 2026 Bryan Keeling. Math Trail. All rights reserved.</div>
+          <div class="pilotBanner hidden" id="pilotBanner"></div>
         </div>
         <div class="shop hidden" id="shop">
           <h1 style="font-size:32px">Trail Shop</h1>
@@ -165,6 +168,13 @@
           </div>
           <div class="shopGrid" id="shopGrid"></div>
           <button class="backBtn" id="shopBack">Back</button>
+        </div>
+        <div class="menu hidden pilotEnded" id="pilotEnded">
+          <h1>Pilot ended</h1>
+          <p class="tag">This classroom pilot link has expired.</p>
+          <p class="tag" style="font-weight:800;opacity:1">Math Trail is $79/year per classroom (unlimited devices in that room).</p>
+          <p class="muted">Reply to your email from Bryan Keeling to renew or start a classroom license.</p>
+          <div class="legal">© 2026 Bryan Keeling. Math Trail. All rights reserved.</div>
         </div>
         <div class="endcard hidden" id="endcard">
           <h1 id="endTitle">Nice run!</h1>
