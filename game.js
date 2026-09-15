@@ -4714,6 +4714,74 @@
     })();
 
 
+
+// ===== PILOT LINK GATE =====
+(function pilotLinkGate() {
+  function parseUntil(raw) {
+    if (!raw) return null;
+    var m = String(raw).trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!m) return null;
+    var d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), 23, 59, 59, 999);
+    if (isNaN(d.getTime())) return null;
+    return d;
+  }
+  function formatNice(d) {
+    try {
+      return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+    } catch (e) {
+      return (d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear();
+    }
+  }
+  var params;
+  try { params = new URLSearchParams(window.location.search || ""); } catch (e) { return; }
+  var pilot = params.get("pilot");
+  var until = parseUntil(params.get("until"));
+  if (!pilot || !until) return;
+
+  var banner = document.getElementById("pilotBanner");
+  var ended = document.getElementById("pilotEnded");
+  var menu = document.getElementById("menu");
+  var shop = document.getElementById("shop");
+  var endcard = document.getElementById("endcard");
+  var now = new Date();
+  var expired = now.getTime() > until.getTime();
+
+  if (!expired) {
+    if (banner) {
+      banner.textContent = "Classroom pilot · free through " + formatNice(until);
+      banner.classList.remove("hidden");
+    }
+    return;
+  }
+
+  function lockUi() {
+    if (menu) menu.classList.add("hidden");
+    if (shop) shop.classList.add("hidden");
+    if (endcard) endcard.classList.add("hidden");
+    if (ended) ended.classList.remove("hidden");
+    var answers = document.getElementById("answers");
+    if (answers) answers.classList.remove("show");
+  }
+  lockUi();
+
+  if (typeof startGame === "function") {
+    var realStart = startGame;
+    startGame = function() {
+      lockUi();
+      return;
+    };
+  }
+  ["startBtn", "continueBtn", "shopOpen", "againBtn"].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("click", function(ev) {
+      if (ev && ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+      if (ev && ev.preventDefault) ev.preventDefault();
+      lockUi();
+    }, true);
+  });
+})();
+
 // ===== CONSOLIDATION FOOTER =====
 
 (function consolidateFooter() {
