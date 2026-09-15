@@ -2017,12 +2017,9 @@
         drawBird(state.heroX, gy);
         drawParticles(dt);
         if (state.arriving > 0) {
+          // Soft wash only — place title lives on drawArrival card (no ghost rename).
           ctx.fillStyle = "rgba(255,247,209," + (Math.min(0.28, state.arriving * 0.12)) + ")";
           ctx.fillRect(0, 0, w, h);
-          ctx.fillStyle = "#7a4b00";
-          ctx.font = "800 28px Fredoka, sans-serif";
-          ctx.textAlign = "center";
-          ctx.fillText(currentPlace().name, w / 2, gy - 160);
         }
         if (state.flash > 0) {
           ctx.fillStyle = "rgba(220,40,40," + (state.flash * 0.28) + ")";
