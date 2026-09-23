@@ -1317,8 +1317,9 @@
       if (theme === "snow") {
         // Cute walking polar bear buddy with red scarf (ages 5–6)
         var st = state.t || 0;
-        var walk = Math.sin((state.runPhase || 0) * 5.5);
-        var sway = Math.sin((state.runPhase || 0) * 2.8) * 1.5;
+        // Use the always-running clock so this buddy keeps walking even when runPhase is idle.
+        var walk = Math.sin(st * 5.5);
+        var sway = Math.sin(st * 2.8) * 1.5;
         var legL = walk * 4;
         var legR = -walk * 4;
         var armSwing = walk * 3;
@@ -1366,7 +1367,7 @@
         ctx.moveTo(bx + 1 + sway, by - 22.5); ctx.quadraticCurveTo(bx + 4 + sway, by - 21, bx + 6.5 + sway, by - 22);
         ctx.stroke();
         // Bright red scarf (wrap + trailing end that flutters)
-        var flutter = Math.sin(st * 6 + (state.runPhase || 0)) * 3;
+        var flutter = Math.sin(st * 6) * 3;
         ctx.fillStyle = "#e53935";
         ctx.beginPath(); ctx.ellipse(bx + sway, by - 20, 12, 4.2, 0, 0, Math.PI * 2); ctx.fill();
         ctx.fillStyle = "#c62828";
