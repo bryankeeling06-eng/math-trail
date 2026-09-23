@@ -1315,17 +1315,76 @@
       }
 
       if (theme === "snow") {
-        // Penguin chick buddy
-        ctx.fillStyle = "#2c3340";
-        ctx.beginPath(); ctx.ellipse(bx, by - 16, 13, 16, 0, 0, Math.PI * 2); ctx.fill();
+        // Cute walking polar bear buddy with red scarf (ages 5–6)
+        var st = state.t || 0;
+        var walk = Math.sin((state.runPhase || 0) * 5.5);
+        var sway = Math.sin((state.runPhase || 0) * 2.8) * 1.5;
+        var legL = walk * 4;
+        var legR = -walk * 4;
+        var armSwing = walk * 3;
+        // Soft ground shadow
+        ctx.fillStyle = "rgba(0,0,0,0.12)";
+        ctx.beginPath(); ctx.ellipse(bx + sway * 0.3, gy + 16, 15, 4.5, 0, 0, Math.PI * 2); ctx.fill();
+        // Walking paws (back then front feel)
+        ctx.fillStyle = "#e8eef5";
+        ctx.beginPath(); ctx.ellipse(bx - 8 + sway, by - 2 + Math.max(0, -legL), 6, 4.2, 0.2, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(bx + 9 + sway, by - 2 + Math.max(0, -legR), 6, 4.2, -0.2, 0, Math.PI * 2); ctx.fill();
+        // Fluffy cream body
+        ctx.fillStyle = "#f4f7fb";
+        ctx.beginPath(); ctx.ellipse(bx + sway, by - 16, 15, 13, 0, 0, Math.PI * 2); ctx.fill();
+        // Soft belly
         ctx.fillStyle = "#ffffff";
-        ctx.beginPath(); ctx.ellipse(bx, by - 12, 8, 11, 0, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(bx, by - 32, 10, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#2c3340";
-        ctx.beginPath(); ctx.arc(bx, by - 34, 10, Math.PI, 0); ctx.fill();
-        ctx.fillStyle = "#e67e22";
-        ctx.beginPath(); ctx.moveTo(bx - 2, by - 30); ctx.lineTo(bx + 10, by - 28); ctx.lineTo(bx - 2, by - 26); ctx.fill();
-        eyes(bx - 1, by - 34, 3.5);
+        ctx.beginPath(); ctx.ellipse(bx + 1 + sway, by - 14, 8, 9, 0, 0, Math.PI * 2); ctx.fill();
+        // Little arms swinging with walk
+        ctx.fillStyle = "#e8eef5";
+        ctx.beginPath(); ctx.ellipse(bx - 14 + sway, by - 16 + armSwing * 0.35, 5, 7, 0.45, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(bx + 14 + sway, by - 16 - armSwing * 0.35, 5, 7, -0.45, 0, Math.PI * 2); ctx.fill();
+        // Round ears
+        ctx.fillStyle = "#f4f7fb";
+        ctx.beginPath(); ctx.arc(bx - 9 + sway, by - 36, 5.5, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(bx + 9 + sway, by - 36, 5.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#f0d5de";
+        ctx.beginPath(); ctx.arc(bx - 9 + sway, by - 36, 2.6, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(bx + 9 + sway, by - 36, 2.6, 0, Math.PI * 2); ctx.fill();
+        // Head
+        ctx.fillStyle = "#f7f9fc";
+        ctx.beginPath(); ctx.arc(bx + sway, by - 30, 11, 0, Math.PI * 2); ctx.fill();
+        // Muzzle
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath(); ctx.ellipse(bx + 1 + sway, by - 25, 6, 4.5, 0, 0, Math.PI * 2); ctx.fill();
+        // Eyes + dark nose
+        eyes(bx + sway, by - 32, 3.8);
+        ctx.fillStyle = "#1b2a41";
+        ctx.beginPath(); ctx.ellipse(bx + 1 + sway, by - 26, 2.4, 1.9, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "rgba(255,255,255,0.55)";
+        ctx.beginPath(); ctx.arc(bx + 0.2 + sway, by - 26.6, 0.7, 0, Math.PI * 2); ctx.fill();
+        // Tiny smile
+        ctx.strokeStyle = "#5a6a7a"; ctx.lineWidth = 1.2; ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(bx + 1 + sway, by - 24.2); ctx.lineTo(bx + 1 + sway, by - 22.5);
+        ctx.moveTo(bx + 1 + sway, by - 22.5); ctx.quadraticCurveTo(bx - 2 + sway, by - 21, bx - 4.5 + sway, by - 22);
+        ctx.moveTo(bx + 1 + sway, by - 22.5); ctx.quadraticCurveTo(bx + 4 + sway, by - 21, bx + 6.5 + sway, by - 22);
+        ctx.stroke();
+        // Bright red scarf (wrap + trailing end that flutters)
+        var flutter = Math.sin(st * 6 + (state.runPhase || 0)) * 3;
+        ctx.fillStyle = "#e53935";
+        ctx.beginPath(); ctx.ellipse(bx + sway, by - 20, 12, 4.2, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#c62828";
+        ctx.beginPath();
+        ctx.moveTo(bx + 8 + sway, by - 20);
+        ctx.quadraticCurveTo(bx + 18 + sway + flutter, by - 10, bx + 16 + sway + flutter * 0.6, by - 2);
+        ctx.lineTo(bx + 11 + sway + flutter * 0.4, by - 1);
+        ctx.quadraticCurveTo(bx + 12 + sway, by - 12, bx + 6 + sway, by - 18);
+        ctx.closePath(); ctx.fill();
+        // Scarf fringe
+        ctx.strokeStyle = "#ff6b6b"; ctx.lineWidth = 1.4; ctx.lineCap = "round";
+        for (var fi = 0; fi < 3; fi++) {
+          var fx = bx + 12 + sway + flutter * 0.35 + fi * 2.2;
+          ctx.beginPath();
+          ctx.moveTo(fx, by - 2);
+          ctx.lineTo(fx + 1 + flutter * 0.15, by + 3);
+          ctx.stroke();
+        }
         return;
       }
 
