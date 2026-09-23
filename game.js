@@ -1282,19 +1282,30 @@
       }
 
       if (theme === "night") {
-        // Firefly buddy
-        var glow = 0.45 + Math.sin((state.t || 0) * 6) * 0.25;
-        ctx.fillStyle = "rgba(125,255,179," + glow + ")";
-        ctx.beginPath(); ctx.arc(bx, by - 18, 16, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#3d5a40";
-        ctx.beginPath(); ctx.ellipse(bx, by - 20, 10, 7, 0, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#7dffb3";
-        ctx.beginPath(); ctx.ellipse(bx, by - 12, 8, 6, 0, 0, Math.PI * 2); ctx.fill();
-        ctx.strokeStyle = "rgba(255,255,255,0.55)";
-        ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.ellipse(bx - 8, by - 26, 8, 4, -0.5, 0, Math.PI * 2); ctx.stroke();
-        ctx.beginPath(); ctx.ellipse(bx + 8, by - 26, 8, 4, 0.5, 0, Math.PI * 2); ctx.stroke();
-        eyes(bx, by - 21, 3);
+        // Cute small firefly buddy (ages 5–6)
+        var ft = state.t || 0;
+        var pulse = 0.55 + Math.sin(ft * 7) * 0.35;
+        // Soft small glow halo (not a huge blob)
+        ctx.fillStyle = "rgba(180,255,100," + (0.18 + pulse * 0.22) + ")";
+        ctx.beginPath(); ctx.arc(bx, by - 14, 7.5, 0, Math.PI * 2); ctx.fill();
+        // Thin translucent wing strokes
+        var flap = Math.sin(ft * 18) * 0.35;
+        ctx.strokeStyle = "rgba(255,255,255,0.5)";
+        ctx.lineWidth = 1.15;
+        ctx.beginPath(); ctx.ellipse(bx - 5, by - 18, 5.2, 2.1, -0.55 + flap, 0, Math.PI * 2); ctx.stroke();
+        ctx.beginPath(); ctx.ellipse(bx + 5, by - 18, 5.2, 2.1, 0.55 - flap, 0, Math.PI * 2); ctx.stroke();
+        // Tiny dark/olive body
+        ctx.fillStyle = "#3a4a28";
+        ctx.beginPath(); ctx.ellipse(bx, by - 18, 3.4, 5, 0, 0, Math.PI * 2); ctx.fill();
+        // Bright yellow-green glowing abdomen (pulses with state.t)
+        ctx.fillStyle = "rgba(200,255,80," + pulse + ")";
+        ctx.beginPath(); ctx.ellipse(bx, by - 10, 4, 5.5, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "rgba(255,255,150," + (0.45 + pulse * 0.4) + ")";
+        ctx.beginPath(); ctx.ellipse(bx, by - 10, 2.1, 3, 0, 0, Math.PI * 2); ctx.fill();
+        // Small head + simple eyes
+        ctx.fillStyle = "#2d3a20";
+        ctx.beginPath(); ctx.arc(bx, by - 24, 3.4, 0, Math.PI * 2); ctx.fill();
+        eyes(bx, by - 24, 2.2);
         return;
       }
 
@@ -3253,34 +3264,7 @@
           ctx.lineTo(bx + 2, by - 62);
           ctx.fill();
         } else if (b === 2) {
-          var ww = (typeof viewW === "function") ? viewW() : 800;
-          var spanP = ww + 280;
-          var pondX = ((680 - (state.scroll || 0) * 0.55) % spanP + spanP) % spanP - 80;
-          var dist = pondX - bx;
-          if (!state.breadToss && dist > 50 && dist < 170) {
-            state.breadToss = { start: state.t || 0, sx: bx + 12, sy: by - 20, tx: pondX - 10, ty: gy + 8 };
-          }
-          if (state.breadToss && dist < -120) state.breadToss = null;
-          var flying = state.breadToss && ((state.t || 0) - state.breadToss.start) > 0.04;
-          if (!flying) { ctx.fillStyle = "#e8d5a3"; ctx.fillRect(bx + 10, by - 22, 10, 7); }
-          var p = 0, breadX = pondX;
-          if (state.breadToss && flying) {
-            p = Math.min(1, Math.max(0, ((state.t || 0) - state.breadToss.start) / 1.15));
-            breadX = state.breadToss.sx + (state.breadToss.tx - state.breadToss.sx) * p;
-            var breadY = state.breadToss.sy + (state.breadToss.ty - state.breadToss.sy) * p - Math.sin(p * Math.PI) * 28;
-            ctx.fillStyle = "#e8d5a3"; ctx.fillRect(breadX, breadY, 9, 6);
-          }
-          function swimDuck(dx, dy, flip) {
-            ctx.save(); ctx.translate(dx, dy); ctx.scale(flip, 1);
-            ctx.fillStyle = "#f4c430";
-            ctx.beginPath(); ctx.ellipse(0, 2, 12, 7, 0, 0, Math.PI * 2); ctx.fill();
-            ctx.beginPath(); ctx.arc(10, -3, 5.2, 0, Math.PI * 2); ctx.fill();
-            ctx.fillStyle = "#e67e22";
-            ctx.beginPath(); ctx.moveTo(14, -3); ctx.lineTo(22, -1); ctx.lineTo(14, 1); ctx.fill();
-            ctx.restore();
-          }
-          swimDuck((pondX - 40) + p * (breadX - (pondX - 40)) * 0.5, gy + 8, 1);
-          swimDuck((pondX + 48) + p * (breadX - (pondX + 48)) * 0.5, gy + 10, -1);
+          // Bread lives in the pond only (see drawBreadAndChasingDucks); never attach to kid.
         } else if (b === 3) {
           ctx.fillStyle = "#8b5a2b"; ctx.fillRect(bx + 12, by - 36, 4, 28);
           ctx.fillStyle = "#7f8c8d"; ctx.fillRect(bx + 4, by - 42, 20, 10);
@@ -3875,39 +3859,47 @@
       function drawBreadAndChasingDucks(w, gy, scroll, buddyX, buddyY) {
         var pondX = wrapPondX(w, scroll);
         if (pondX < -160 || pondX > w + 160) {
+          // Pond off-screen: reset toss so next appearance can arc once from the edge.
           state.breadToss = null;
+          state.breadInPond = false;
           return;
         }
         var left = pondX - 110;
         var right = pondX + 110;
         var waterY = gy + 10;
-        var dist = pondX - (buddyX || 0);
-        if (!state.breadToss && dist > 40 && dist < 180) {
+        var bob = Math.sin((state.t || 0) * 2.2) * 1.4;
+        var restX = clamp(pondX - 8, left + 20, right - 20);
+        var restY = waterY + bob;
+        // Optional one-time toss FROM pond edge INTO water (never from kid/buddy).
+        if (!state.breadInPond && !state.breadToss) {
           state.breadToss = {
             start: state.t || 0,
-            sx: (buddyX || pondX - 80) + 12,
-            sy: (buddyY || gy) - 20,
-            tx: clamp(pondX - 8, left + 20, right - 20),
+            sx: left + 18,
+            sy: waterY - 6,
+            tx: restX,
             ty: waterY
           };
         }
-        var p = 0;
-        var breadX = clamp(pondX - 8, left + 20, right - 20);
-        var breadY = waterY;
-        if (state.breadToss) {
+        var p = 1;
+        var breadX = restX;
+        var breadY = restY;
+        if (state.breadToss && !state.breadInPond) {
           p = Math.min(1, Math.max(0, ((state.t || 0) - state.breadToss.start) / 1.15));
           breadX = state.breadToss.sx + (state.breadToss.tx - state.breadToss.sx) * p;
-          breadY = state.breadToss.sy + (state.breadToss.ty - state.breadToss.sy) * p - Math.sin(p * Math.PI) * 28;
+          breadY = state.breadToss.sy + (state.breadToss.ty - state.breadToss.sy) * p - Math.sin(p * Math.PI) * 18;
           breadX = clamp(breadX, left + 16, right - 16);
           if (p >= 1) {
-            breadX = state.breadToss.tx;
-            breadY = waterY;
+            state.breadInPond = true;
+            breadX = restX;
+            breadY = restY;
           }
-          ctx.fillStyle = "#e8d5a3";
-          ctx.fillRect(breadX, breadY, 9, 6);
         }
-        var d1 = clamp(pondX - 40 + p * (breadX - (pondX - 40)) * 0.45, left + 24, right - 24);
-        var d2 = clamp(pondX + 48 + p * (breadX - (pondX + 48)) * 0.45, left + 24, right - 24);
+        // Always keep bread in the pond while the pond is on screen (kid walking away does not clear it).
+        ctx.fillStyle = "#e8d5a3";
+        ctx.fillRect(breadX, breadY, 9, 6);
+        var chase = Math.min(1, p);
+        var d1 = clamp(pondX - 40 + chase * (breadX - (pondX - 40)) * 0.45, left + 24, right - 24);
+        var d2 = clamp(pondX + 48 + chase * (breadX - (pondX + 48)) * 0.45, left + 24, right - 24);
         drawPondDuck(d1, waterY - 2 + Math.sin((state.t || 0) * 2) * 2, 1);
         drawPondDuck(d2, waterY + 2 + Math.sin((state.t || 0) * 2 + 1.1) * 2, -1);
       }
@@ -3918,6 +3910,7 @@
           if (inSpace()) { drawBuddyInShip(gy); return; }
           if (!pondTrail()) {
             state.breadToss = null;
+            state.breadInPond = false;
             rawBuddy(x, gy);
             return;
           }
@@ -3961,14 +3954,17 @@
       }
       function sprinkleHills(w, h, gy, scroll) {
         var cols = ["#ff4d8d", "#fff7fb", "#7dffb3", "#ffd166", "#6ec6ff", "#c56cff", "#ff8ab8", "#ff6b6b", "#ffe66d", "#ffffff"];
+        // Same speeds/amps/bases as drawHills candy layers; sprinkles pin to the filled face only.
         var layers = [
-          { speed: 0.18, amp: 28, base: gy - 90, depth: 48 },
-          { speed: 0.32, amp: 22, base: gy - 40, depth: 28 }
+          { speed: 0.18, amp: 28, base: gy - 90 },
+          { speed: 0.32, amp: 22, base: gy - 40 }
         ];
         var span = w + 120;
         for (var L = 0; L < layers.length; L++) {
           var layer = layers[L];
-          for (var i = 0; i < 80; i++) {
+          // Prefer front/near layer density
+          var count = L === 1 ? 90 : 40;
+          for (var i = 0; i < count; i++) {
             var a = hash(i * 17.3 + L * 91.1);
             var b = hash(i * 9.7 + L * 4.2 + 20);
             var c = hash(i * 3.1 + L * 13.8 + 50);
@@ -3976,8 +3972,8 @@
             var seed = a * span;
             var sx = ((seed - scroll * layer.speed) % span + span) % span - 30;
             var ridge = hillY(sx, scroll, layer);
-            var sy = ridge + 8 + b * layer.depth;
-            if (sy > gy - 8) continue;
+            var sy = ridge + 3 + b * 8;
+            if (sy < ridge || sy > gy - 6) continue;
             ctx.fillStyle = cols[Math.floor(c * cols.length)];
             ctx.beginPath();
             if (d > 0.55) ctx.ellipse(sx, sy, 2.8 + a * 1.4, 1.05, d * Math.PI, 0, Math.PI * 2);
@@ -4064,6 +4060,7 @@
             drawBreadAndChasingDucks(w, gy, scroll, bx, gy);
           } else {
             state.breadToss = null;
+            state.breadInPond = false;
           }
           if (candyTrail()) drawSuckers(w, gy, scroll);
           if (snowTrail()) drawFallingSnow(w, h);
@@ -4222,11 +4219,20 @@
           ctx.beginPath(); ctx.arc(x + 6, y - 98 + bob, 2.4, 0, Math.PI * 2); ctx.fill();
         }
         if (acc === "firefly") {
-          ctx.fillStyle = "rgba(255,255,220,0.7)";
+          // Jar with a tiny glowing firefly inside
+          var aft = state.t || 0;
+          var afg = 0.5 + Math.sin(aft * 7) * 0.35;
+          ctx.fillStyle = "rgba(220,240,255,0.35)";
           ctx.fillRect(x + 12, y - 78 + bob, 16, 18);
           ctx.strokeStyle = "#7a4b00"; ctx.lineWidth = 2; ctx.strokeRect(x + 12, y - 78 + bob, 16, 18);
-          ctx.fillStyle = "#f4c430";
-          ctx.beginPath(); ctx.arc(x + 20, y - 68 + bob, 3.2, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#8b6914";
+          ctx.fillRect(x + 11, y - 80 + bob, 18, 3);
+          ctx.fillStyle = "rgba(180,255,80," + (0.22 + afg * 0.28) + ")";
+          ctx.beginPath(); ctx.arc(x + 20, y - 68 + bob, 4.5, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#3a4a28";
+          ctx.beginPath(); ctx.ellipse(x + 20, y - 70 + bob, 1.2, 2, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "rgba(220,255,100," + afg + ")";
+          ctx.beginPath(); ctx.arc(x + 20, y - 67 + bob, 2, 0, Math.PI * 2); ctx.fill();
         }
         if (acc === "backpack") {
           ctx.fillStyle = "#2b6cb0"; ctx.fillRect(x - 26, y - 46 + bob, 14, 22);
