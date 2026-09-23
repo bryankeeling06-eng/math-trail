@@ -1310,19 +1310,39 @@
       }
 
       if (theme === "space") {
-        // Little alien buddy (ship wrapper may still draw around this)
+        // Cute floating alien buddy (ages 5–6)
+        var st = state.t || 0;
+        var glow = 0.55 + Math.sin(st * 4.5) * 0.35;
+        // Soft float shadow
+        ctx.fillStyle = "rgba(120,220,255,0.18)";
+        ctx.beginPath(); ctx.ellipse(bx, gy + 14, 14, 4, 0, 0, Math.PI * 2); ctx.fill();
+        // Small body
+        ctx.fillStyle = "#5fd98a";
+        ctx.beginPath(); ctx.ellipse(bx, by - 12, 10, 12, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#d4ffe4";
+        ctx.beginPath(); ctx.ellipse(bx, by - 10, 5.5, 7, 0, 0, Math.PI * 2); ctx.fill();
+        // Big oval head
         ctx.fillStyle = "#7dffb3";
-        ctx.beginPath(); ctx.ellipse(bx, by - 14, 14, 12, 0, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.ellipse(bx, by - 30, 16, 14, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(bx, by - 34, 17, 15, 0, 0, Math.PI * 2); ctx.fill();
+        // Large dark eyes + white highlights
         ctx.fillStyle = "#1b2a41";
-        ctx.beginPath(); ctx.ellipse(bx - 5, by - 32, 4, 6, 0, 0, Math.PI * 2); ctx.ellipse(bx + 5, by - 32, 4, 6, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(bx - 6, by - 36, 5.2, 7.2, 0, 0, Math.PI * 2); ctx.ellipse(bx + 6, by - 36, 5.2, 7.2, 0, 0, Math.PI * 2); ctx.fill();
         ctx.fillStyle = "#fff";
-        ctx.beginPath(); ctx.arc(bx - 5, by - 33, 1.5, 0, Math.PI * 2); ctx.arc(bx + 5, by - 33, 1.5, 0, Math.PI * 2); ctx.fill();
-        ctx.strokeStyle = "#7dffb3";
-        ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.moveTo(bx - 6, by - 42); ctx.lineTo(bx - 10, by - 52); ctx.moveTo(bx + 6, by - 42); ctx.lineTo(bx + 10, by - 52); ctx.stroke();
-        ctx.fillStyle = "#f4c430";
-        ctx.beginPath(); ctx.arc(bx - 10, by - 52, 3, 0, Math.PI * 2); ctx.arc(bx + 10, by - 52, 3, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(bx - 4.5, by - 38.5, 1.8, 0, Math.PI * 2); ctx.arc(bx + 7.5, by - 38.5, 1.8, 0, Math.PI * 2); ctx.fill();
+        // Tiny smile
+        ctx.strokeStyle = "#2e8b57";
+        ctx.lineWidth = 1.6;
+        ctx.beginPath(); ctx.arc(bx, by - 27, 3.5, 0.15, Math.PI - 0.15); ctx.stroke();
+        // Antennae with glowing tips
+        ctx.strokeStyle = "#5fd98a";
+        ctx.lineWidth = 2.2;
+        ctx.lineCap = "round";
+        ctx.beginPath(); ctx.moveTo(bx - 7, by - 46); ctx.quadraticCurveTo(bx - 12, by - 56, bx - 14, by - 62); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(bx + 7, by - 46); ctx.quadraticCurveTo(bx + 12, by - 56, bx + 14, by - 62); ctx.stroke();
+        ctx.fillStyle = "rgba(255,220,80," + (0.35 + glow * 0.45) + ")";
+        ctx.beginPath(); ctx.arc(bx - 14, by - 62, 5.5, 0, Math.PI * 2); ctx.arc(bx + 14, by - 62, 5.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#ffe566";
+        ctx.beginPath(); ctx.arc(bx - 14, by - 62, 3.2, 0, Math.PI * 2); ctx.arc(bx + 14, by - 62, 3.2, 0, Math.PI * 2); ctx.fill();
         return;
       }
 
@@ -3813,24 +3833,48 @@
         return 92;
       }
 
-      function drawBuddyInShip(gy) {
+      function drawSpaceAlienBuddy(gy) {
+        // Cute floating alien trail buddy (no ship/UFO)
         var x = shipX();
         var hover = Math.sin((state.t || 0) * 3.2) * 5;
         var y = gy - 18 + hover;
+        var glow = 0.55 + Math.sin((state.t || 0) * 4.5) * 0.35;
         ctx.save();
-        ctx.fillStyle = "#8ea0b8";
-        ctx.beginPath(); ctx.ellipse(x, y + 10, 42, 16, 0, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#c5d3e6";
-        ctx.beginPath(); ctx.ellipse(x, y + 7, 36, 11, 0, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#d7e4f5";
-        ctx.beginPath(); ctx.ellipse(x, y - 16, 22, 20, 0, Math.PI, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#7ad0ff";
-        ctx.beginPath(); ctx.ellipse(x + 2, y - 18, 13, 12, 0, 0, Math.PI * 2); ctx.fill();
-        // Alien buddy in the cockpit
+        // Soft hover glow / shadow
+        ctx.fillStyle = "rgba(120,220,255,0.2)";
+        ctx.beginPath(); ctx.ellipse(x, y + 28, 16, 5, 0, 0, Math.PI * 2); ctx.fill();
+        // Small body
+        ctx.fillStyle = "#5fd98a";
+        ctx.beginPath(); ctx.ellipse(x, y + 8, 11, 13, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#d4ffe4";
+        ctx.beginPath(); ctx.ellipse(x, y + 10, 6, 7.5, 0, 0, Math.PI * 2); ctx.fill();
+        // Tiny arms
+        ctx.strokeStyle = "#5fd98a";
+        ctx.lineWidth = 3;
+        ctx.lineCap = "round";
+        ctx.beginPath(); ctx.moveTo(x - 9, y + 4); ctx.lineTo(x - 16, y + 12); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(x + 9, y + 4); ctx.lineTo(x + 16, y + 12); ctx.stroke();
+        // Big oval head
         ctx.fillStyle = "#7dffb3";
-        ctx.beginPath(); ctx.arc(x + 1, y - 20, 7.5, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(x, y - 16, 18, 16, 0, 0, Math.PI * 2); ctx.fill();
+        // Large dark eyes with white highlights
         ctx.fillStyle = "#1b2a41";
-        ctx.beginPath(); ctx.ellipse(x - 2, y - 21, 2.2, 3.2, 0, 0, Math.PI * 2); ctx.ellipse(x + 4, y - 21, 2.2, 3.2, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(x - 6.5, y - 18, 5.6, 7.8, 0, 0, Math.PI * 2); ctx.ellipse(x + 6.5, y - 18, 5.6, 7.8, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#fff";
+        ctx.beginPath(); ctx.arc(x - 4.8, y - 20.5, 2, 0, Math.PI * 2); ctx.arc(x + 8.2, y - 20.5, 2, 0, Math.PI * 2); ctx.fill();
+        // Tiny smile
+        ctx.strokeStyle = "#2e8b57";
+        ctx.lineWidth = 1.7;
+        ctx.beginPath(); ctx.arc(x, y - 8, 4, 0.15, Math.PI - 0.15); ctx.stroke();
+        // Antennae with glowing tips
+        ctx.strokeStyle = "#5fd98a";
+        ctx.lineWidth = 2.4;
+        ctx.beginPath(); ctx.moveTo(x - 8, y - 28); ctx.quadraticCurveTo(x - 14, y - 40, x - 16, y - 48); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(x + 8, y - 28); ctx.quadraticCurveTo(x + 14, y - 40, x + 16, y - 48); ctx.stroke();
+        ctx.fillStyle = "rgba(255,220,80," + (0.35 + glow * 0.45) + ")";
+        ctx.beginPath(); ctx.arc(x - 16, y - 48, 6, 0, Math.PI * 2); ctx.arc(x + 16, y - 48, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#ffe566";
+        ctx.beginPath(); ctx.arc(x - 16, y - 48, 3.4, 0, Math.PI * 2); ctx.arc(x + 16, y - 48, 3.4, 0, Math.PI * 2); ctx.fill();
         ctx.restore();
       }
 
@@ -3907,7 +3951,7 @@
       if (typeof drawBuddy === "function") {
         var rawBuddy = drawBuddy;
         drawBuddy = function(x, gy) {
-          if (inSpace()) { drawBuddyInShip(gy); return; }
+          if (inSpace()) { drawSpaceAlienBuddy(gy); return; }
           if (!pondTrail()) {
             state.breadToss = null;
             state.breadInPond = false;
