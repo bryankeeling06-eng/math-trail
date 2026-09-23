@@ -6,7 +6,7 @@
  * Save key: mathTrailSaveV5
  */
 
-// ===== CORE (game-a) =====
+// ===== CORE =====
 
 
     const canvas = document.getElementById("game");
@@ -85,15 +85,15 @@
     };
 
     var PLACES = [
-      { id: "hills", name: "Sunny Hills", goal: "Picnic Spot", arrive: "Sunny hills ahead!" },
+      { id: "hills", name: "Sunny Hills", goal: "Picnic Spot", arrive: "You made it to the picnic!" },
       { id: "picnic", name: "Picnic Spot", goal: "Duck Pond", arrive: "Picnic time!" },
       { id: "pond", name: "Duck Pond", goal: "Treehouse", arrive: "The ducks say hi!" },
       { id: "treehouse", name: "Treehouse", goal: "Red Barn", arrive: "Up in the treehouse!" },
-      { id: "barn", name: "Red Barn", goal: "Pumpkin Patch", arrive: "Welcome to the red barn!" },
+      { id: "barn", name: "Red Barn", goal: "Pumpkin Patch", arrive: "The red barn!" },
       { id: "pumpkin", name: "Pumpkin Patch", goal: "Candy Trail", arrive: "Pumpkins everywhere!" },
       { id: "candy", name: "Candy Trail", goal: "Snowy Hill", arrive: "Sweet candy trail!" },
       { id: "snow", name: "Snowy Hill", goal: "Firefly Night", arrive: "Snow day!" },
-      { id: "night", name: "Firefly Night", goal: "Outer Space", arrive: "Fireflies everywhere!" },
+      { id: "night", name: "Firefly Night", goal: "Outer Space", arrive: "Fireflies!" },
       { id: "space", name: "Outer Space", goal: "Sunny Hills", arrive: "Blast off!" }
     ];
     var WIN_MOVES = ["flip", "cartwheel", "bounce"]; // jump-only gate clears
@@ -460,6 +460,10 @@
       banner.classList.remove("show");
       updateHud();
       saveRun();
+      if (typeof refreshGoal === "function") refreshGoal();
+      var chip = document.getElementById("levelChip");
+      var p = (typeof currentPlace === "function") ? currentPlace() : null;
+      if (chip && p) chip.textContent = p.name;
     }
 
     function endGame() {
@@ -511,6 +515,9 @@
       sfxArrive();
       // Arrival title card (drawArrival) owns the welcome — skip stacked toast.
       refreshGoal();
+      var chip = document.getElementById("levelChip");
+      var p = (typeof currentPlace === "function") ? currentPlace() : null;
+      if (chip && p) chip.textContent = p.name;
     }
 
     function chooseAnswer(i) {
@@ -715,54 +722,36 @@
     });
     document.getElementById("resumeBtn").addEventListener("click", function(){ setPaused(false); });
     refreshMuteBtn();
-    const CATALOG = [
+    var CATALOG = [
       { id: "fox", name: "Fox", price: 0, emo: "🦊", body: "#ff8a3c", belly: "#ffe0bd", ear: "fox", acc: "none" },
       { id: "cat", name: "Cat", price: 8, emo: "🐱", body: "#d4a017", belly: "#fff3c4", ear: "cat", acc: "none" },
       { id: "bunny", name: "Bunny", price: 12, emo: "🐰", body: "#f3f0ea", belly: "#ffffff", ear: "bunny", acc: "none" },
-      { id: "cape", name: "Super Cape", price: 10, emo: "🦸", body: "#ff8a3c", belly: "#ffe0bd", ear: "fox", acc: "cape" },
-      { id: "robot", name: "Robot", price: 15, emo: "🤖", body: "#6aa8d8", belly: "#d7ecff", ear: "robot", acc: "antenna" },
       { id: "penguin", name: "Penguin", price: 18, emo: "🐧", body: "#2c3340", belly: "#ffffff", ear: "round", acc: "none" },
-      { id: "unicorn", name: "Unicorn", price: 20, emo: "🦄", body: "#f4b6d2", belly: "#fff0f7", ear: "fox", acc: "horn" },
-      { id: "dragon", name: "Dragon", price: 25, emo: "🐲", body: "#3cb371", belly: "#d4f5d8", ear: "fox", acc: "wings" },
-      { id: "owl", name: "Owl", price: 30, emo: "🦉", body: "#8d6e63", belly: "#ffe0bd", ear: "owl", acc: "none", unlock: 15 },
-      { id: "frog", name: "Frog", price: 30, emo: "🐸", body: "#3cb371", belly: "#d4f5d8", ear: "round", acc: "none", unlock: 15 },
-      { id: "chick", name: "Chick", price: 30, emo: "🐤", body: "#f4c430", belly: "#fff3c4", ear: "round", acc: "none", unlock: 15 },
-      { id: "mouse", name: "Mouse", price: 30, emo: "🐭", body: "#c9d6e4", belly: "#ffffff", ear: "bear", acc: "none", unlock: 15 },
-      { id: "pig", name: "Pig", price: 30, emo: "🐷", body: "#f4b6d2", belly: "#fff0f7", ear: "bear", acc: "none", unlock: 15 },
-      { id: "duck", name: "Duck", price: 30, emo: "🦆", body: "#f4c430", belly: "#fff3c4", ear: "round", acc: "none", unlock: 15 },
-      { id: "hedgehog", name: "Hedgehog", price: 30, emo: "🦔", body: "#8d6e63", belly: "#ffe0bd", ear: "fox", acc: "none", unlock: 15 },
-      { id: "squirrel", name: "Squirrel", price: 30, emo: "🐿️", body: "#d4a017", belly: "#fff3c4", ear: "fox", acc: "none", unlock: 15 },
-      { id: "bear", name: "Bear", price: 40, emo: "🐻", body: "#8d6e63", belly: "#ffe0bd", ear: "bear", acc: "none", unlock: 25 },
-      { id: "raccoon", name: "Raccoon", price: 40, emo: "🦝", body: "#7a7f89", belly: "#f3f0ea", ear: "fox", acc: "mask", unlock: 25 },
-      { id: "wolf", name: "Wolf", price: 40, emo: "🐺", body: "#7a7f89", belly: "#f3f0ea", ear: "fox", acc: "none", unlock: 25 },
-      { id: "deer", name: "Deer", price: 40, emo: "🦌", body: "#d4a017", belly: "#fff3c4", ear: "fox", acc: "horn", unlock: 25 },
-      { id: "seal", name: "Seal", price: 40, emo: "🦭", body: "#7a7f89", belly: "#ffffff", ear: "round", acc: "none", unlock: 25 },
-      { id: "koala", name: "Koala", price: 40, emo: "🐨", body: "#7a7f89", belly: "#f3f0ea", ear: "bear", acc: "none", unlock: 25 },
-      { id: "monkey", name: "Monkey", price: 40, emo: "🐵", body: "#d4a017", belly: "#ffe0bd", ear: "bear", acc: "none", unlock: 25 },
-      { id: "turtle", name: "Turtle", price: 40, emo: "🐢", body: "#3cb371", belly: "#d4f5d8", ear: "round", acc: "none", unlock: 25 },
-      { id: "tiger", name: "Tiger", price: 50, emo: "🐯", body: "#ff8a3c", belly: "#fff3c4", ear: "cat", acc: "none", unlock: 30 },
-      { id: "panda", name: "Panda", price: 50, emo: "🐼", body: "#f3f0ea", belly: "#ffffff", ear: "bear", acc: "mask", unlock: 30 },
-      { id: "lion", name: "Lion", price: 50, emo: "🦁", body: "#d4a017", belly: "#fff3c4", ear: "fox", acc: "none", unlock: 30 },
-      { id: "elephant", name: "Elephant", price: 50, emo: "🐘", body: "#7a7f89", belly: "#f3f0ea", ear: "round", acc: "none", unlock: 30 },
-      { id: "giraffe", name: "Giraffe", price: 50, emo: "🦒", body: "#f4c430", belly: "#fff3c4", ear: "fox", acc: "none", unlock: 30 },
-      { id: "croc", name: "Crocodile", price: 50, emo: "🐊", body: "#3cb371", belly: "#d4f5d8", ear: "round", acc: "none", unlock: 30 },
-      { id: "shark", name: "Shark", price: 50, emo: "🦈", body: "#6aa8d8", belly: "#d7ecff", ear: "round", acc: "none", unlock: 30 },
-      { id: "bee", name: "Bee", price: 50, emo: "🐝", body: "#f4c430", belly: "#2c3340", ear: "round", acc: "wings", unlock: 30 },
-      { id: "phoenix", name: "Phoenix", price: 60, emo: "🔥", body: "#e74c3c", belly: "#f4c430", ear: "fox", acc: "wings", unlock: 35 },
-      { id: "knight", name: "Knight", price: 60, emo: "🛡️", body: "#7a7f89", belly: "#d7ecff", ear: "robot", acc: "antenna", unlock: 35 },
-      { id: "wizard", name: "Wizard", price: 60, emo: "🧙", body: "#9b59b6", belly: "#fff0f7", ear: "fox", acc: "cape", unlock: 35 },
-      { id: "alien", name: "Alien", price: 60, emo: "👽", body: "#3cb371", belly: "#d4f5d8", ear: "round", acc: "antenna", unlock: 35 },
-      { id: "dino", name: "Dino", price: 60, emo: "🦖", body: "#3cb371", belly: "#d4f5d8", ear: "fox", acc: "none", unlock: 35 },
-      { id: "ninja", name: "Ninja", price: 60, emo: "🥷", body: "#2c3340", belly: "#7a7f89", ear: "round", acc: "mask", unlock: 35 },
-      { id: "fairy", name: "Fairy", price: 60, emo: "🧚", body: "#f4b6d2", belly: "#fff0f7", ear: "fox", acc: "wings", unlock: 35 },
-      { id: "viking", name: "Viking", price: 60, emo: "🪓", body: "#8d6e63", belly: "#ffe0bd", ear: "fox", acc: "horn", unlock: 35 }
+      { id: "frog", name: "Frog", price: 22, emo: "🐸", body: "#3cb371", belly: "#d4f5d8", ear: "round", acc: "none", unlock: 8 },
+      { id: "owl", name: "Owl", price: 26, emo: "🦉", body: "#8d6e63", belly: "#ffe0bd", ear: "owl", acc: "none", unlock: 12 },
+      { id: "bear", name: "Bear", price: 30, emo: "🐻", body: "#8d6e63", belly: "#ffe0bd", ear: "bear", acc: "none", unlock: 18 },
+      { id: "robot", name: "Robot", price: 34, emo: "🤖", body: "#6aa8d8", belly: "#d7ecff", ear: "robot", acc: "antenna", unlock: 22 }
     ];
+    var HATS = [
+      { id: "none", name: "No hat", price: 0, emo: "✨", acc: "none" },
+      { id: "cape", name: "Super Cape", price: 10, emo: "🦸", acc: "cape" },
+      { id: "starcape", name: "Star Cape", price: 14, emo: "🌟", acc: "starcape" },
+      { id: "picnic", name: "Picnic Hat", price: 12, emo: "🧿", acc: "picnic" },
+      { id: "straw", name: "Barn Hat", price: 12, emo: "👒", acc: "straw" },
+      { id: "firefly", name: "Firefly Jar", price: 16, emo: "🫢", acc: "firefly", unlock: 10 },
+      { id: "backpack", name: "Trail Pack", price: 16, emo: "🎒", acc: "backpack" },
+      { id: "wizard", name: "Wizard Hat", price: 20, emo: "🧙", acc: "wizard", unlock: 15 },
+      { id: "ninja", name: "Ninja Mask", price: 20, emo: "🥷", acc: "mask", unlock: 15 },
+      { id: "horn", name: "Magic Horn", price: 22, emo: "🦤", acc: "horn", unlock: 18 },
+      { id: "wings", name: "Trail Wings", price: 28, emo: "🪽", acc: "wings", unlock: 20 }
+    ];
+    window.HATS = HATS;
 
     var PALETTE = ["#ff8a3c","#e74c3c","#f4c430","#3cb371","#2ecc71","#3498db","#6aa8d8","#9b59b6","#f4b6d2","#8d6e63","#2c3340","#f3f0ea"];
 
 
 
-// ===== CORE CONT (game-b) =====
+// ===== DRAW / WORLD =====
 
     function mixBelly(hex) {
       hex = (hex || "#ff8a3c").replace("#","");
@@ -974,15 +963,21 @@
 
     function biomeTheme() {
       var b = state.biome || 0;
+      if (b === 9 || state.launching || (typeof currentPlace === "function" && currentPlace() && currentPlace().id === "space")) {
+        return { sky0: "#050816", sky1: "#10183a", sky2: "#1a1448", sun: "#f4f0c8", hillA: "#141428", hillB: "#1c1c38", grass: "#12122a", grassTop: "#1a1a36", dirt: "#0a0a18", night: true };
+      }
       var themes = [
         { sky0: "#6bb8ff", sky1: "#b8e4ff", sky2: "#e7f7c8", sun: "#ffe27a", hillA: "#8fd18a", hillB: "#6fc16a", grass: "#4caf50", grassTop: "#7ed56a", dirt: "#5d3a1a", night: false },
         { sky0: "#7ec8ff", sky1: "#ffe7b0", sky2: "#f7e3a8", sun: "#ffd36a", hillA: "#9ad46a", hillB: "#7cbe58", grass: "#5cba5a", grassTop: "#8fe06c", dirt: "#6a4420", night: false },
         { sky0: "#6ec4e8", sky1: "#b8e8ef", sky2: "#c8e8c0", sun: "#ffe27a", hillA: "#6fc9a8", hillB: "#4eb08e", grass: "#3fa87a", grassTop: "#7ed9a8", dirt: "#3d5a4a", night: false },
         { sky0: "#7eb6ff", sky1: "#c5e4c0", sky2: "#d7efb0", sun: "#ffe27a", hillA: "#5aa35a", hillB: "#3e8b44", grass: "#3d8f40", grassTop: "#6ec85c", dirt: "#4a3016", night: false },
         { sky0: "#8ec6f0", sky1: "#f0d9a8", sky2: "#e8c98a", sun: "#ffcf66", hillA: "#b7d36a", hillB: "#8fb24a", grass: "#6aa83a", grassTop: "#9ad45a", dirt: "#6b3a18", night: false },
-        { sky0: "#1a2744", sky1: "#2c3e6b", sky2: "#1e3a3a", sun: "#f4f0c8", hillA: "#2f5a48", hillB: "#24463a", grass: "#1f4a32", grassTop: "#2e6a44", dirt: "#1a2418", night: true }
+        { sky0: "#f4a25a", sky1: "#ffd08a", sky2: "#f3e0a8", sun: "#ffcf66", hillA: "#c4b05a", hillB: "#9a8a3a", grass: "#7a9a3a", grassTop: "#c4d46a", dirt: "#6b3a18", night: false },
+        { sky0: "#ff9ad2", sky1: "#ffd0f0", sky2: "#ffe8c8", sun: "#ff8ab8", hillA: "#ff9ac8", hillB: "#f07ab0", grass: "#f48cc0", grassTop: "#ffb6d8", dirt: "#c45a8a", night: false },
+        { sky0: "#c8e4ff", sky1: "#eef7ff", sky2: "#d8ecff", sun: "#fff6d0", hillA: "#d8e8f4", hillB: "#c0d4e4", grass: "#eef6ff", grassTop: "#ffffff", dirt: "#9ab0c4", night: false },
+        { sky0: "#1a2744", sky1: "#2c3e6b", sky2: "#3d4f7a", sun: "#f4e4a6", hillA: "#2a3d2e", hillB: "#1e2e22", grass: "#2f4a34", grassTop: "#3d5c42", dirt: "#1b1520", night: true }
       ];
-      return themes[b % themes.length];
+      return themes[Math.min(b, themes.length - 1)];
     }
 
     function drawSky(w, h) {
@@ -1173,7 +1168,10 @@
     }
 
     function drawBuddy(x, gy) {
-      var bx = x;
+      var hop = 0;
+      if (state.buddyHop > 0) hop = Math.sin(Math.min(1, state.buddyHop) * Math.PI) * 18;
+      var bx = state.buddyX != null ? state.buddyX : x;
+      gy = gy - hop;
       var bob = Math.sin((state.runPhase || 0) * 2 + 1) * 3;
       var by = gy + bob;
       var theme = buddyThemeId();
@@ -1418,39 +1416,41 @@
       }
 
       if (theme === "space") {
-        // Cute floating alien buddy (ages 5–6)
-        var st = state.t || 0;
-        var glow = 0.55 + Math.sin(st * 4.5) * 0.35;
-        // Soft float shadow
-        ctx.fillStyle = "rgba(120,220,255,0.18)";
-        ctx.beginPath(); ctx.ellipse(bx, gy + 14, 14, 4, 0, 0, Math.PI * 2); ctx.fill();
-        // Small body
+        // Cute floating alien trail buddy at fixed trail slot (no ship/UFO)
+        var ax = 92;
+        var hover = Math.sin((state.t || 0) * 3.2) * 5;
+        var ay = gy - 18 + hover;
+        var glow = 0.55 + Math.sin((state.t || 0) * 4.5) * 0.35;
+        ctx.save();
+        ctx.fillStyle = "rgba(120,220,255,0.2)";
+        ctx.beginPath(); ctx.ellipse(ax, ay + 28, 16, 5, 0, 0, Math.PI * 2); ctx.fill();
         ctx.fillStyle = "#5fd98a";
-        ctx.beginPath(); ctx.ellipse(bx, by - 12, 10, 12, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(ax, ay + 8, 11, 13, 0, 0, Math.PI * 2); ctx.fill();
         ctx.fillStyle = "#d4ffe4";
-        ctx.beginPath(); ctx.ellipse(bx, by - 10, 5.5, 7, 0, 0, Math.PI * 2); ctx.fill();
-        // Big oval head
-        ctx.fillStyle = "#7dffb3";
-        ctx.beginPath(); ctx.ellipse(bx, by - 34, 17, 15, 0, 0, Math.PI * 2); ctx.fill();
-        // Large dark eyes + white highlights
-        ctx.fillStyle = "#1b2a41";
-        ctx.beginPath(); ctx.ellipse(bx - 6, by - 36, 5.2, 7.2, 0, 0, Math.PI * 2); ctx.ellipse(bx + 6, by - 36, 5.2, 7.2, 0, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#fff";
-        ctx.beginPath(); ctx.arc(bx - 4.5, by - 38.5, 1.8, 0, Math.PI * 2); ctx.arc(bx + 7.5, by - 38.5, 1.8, 0, Math.PI * 2); ctx.fill();
-        // Tiny smile
-        ctx.strokeStyle = "#2e8b57";
-        ctx.lineWidth = 1.6;
-        ctx.beginPath(); ctx.arc(bx, by - 27, 3.5, 0.15, Math.PI - 0.15); ctx.stroke();
-        // Antennae with glowing tips
+        ctx.beginPath(); ctx.ellipse(ax, ay + 10, 6, 7.5, 0, 0, Math.PI * 2); ctx.fill();
         ctx.strokeStyle = "#5fd98a";
-        ctx.lineWidth = 2.2;
+        ctx.lineWidth = 3;
         ctx.lineCap = "round";
-        ctx.beginPath(); ctx.moveTo(bx - 7, by - 46); ctx.quadraticCurveTo(bx - 12, by - 56, bx - 14, by - 62); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(bx + 7, by - 46); ctx.quadraticCurveTo(bx + 12, by - 56, bx + 14, by - 62); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(ax - 9, ay + 4); ctx.lineTo(ax - 16, ay + 12); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(ax + 9, ay + 4); ctx.lineTo(ax + 16, ay + 12); ctx.stroke();
+        ctx.fillStyle = "#7dffb3";
+        ctx.beginPath(); ctx.ellipse(ax, ay - 16, 18, 16, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#1b2a41";
+        ctx.beginPath(); ctx.ellipse(ax - 6.5, ay - 18, 5.6, 7.8, 0, 0, Math.PI * 2); ctx.ellipse(ax + 6.5, ay - 18, 5.6, 7.8, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#fff";
+        ctx.beginPath(); ctx.arc(ax - 4.8, ay - 20.5, 2, 0, Math.PI * 2); ctx.arc(ax + 8.2, ay - 20.5, 2, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = "#2e8b57";
+        ctx.lineWidth = 1.7;
+        ctx.beginPath(); ctx.arc(ax, ay - 8, 4, 0.15, Math.PI - 0.15); ctx.stroke();
+        ctx.strokeStyle = "#5fd98a";
+        ctx.lineWidth = 2.4;
+        ctx.beginPath(); ctx.moveTo(ax - 8, ay - 28); ctx.quadraticCurveTo(ax - 14, ay - 40, ax - 16, ay - 48); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(ax + 8, ay - 28); ctx.quadraticCurveTo(ax + 14, ay - 40, ax + 16, ay - 48); ctx.stroke();
         ctx.fillStyle = "rgba(255,220,80," + (0.35 + glow * 0.45) + ")";
-        ctx.beginPath(); ctx.arc(bx - 14, by - 62, 5.5, 0, Math.PI * 2); ctx.arc(bx + 14, by - 62, 5.5, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(ax - 16, ay - 48, 6, 0, Math.PI * 2); ctx.arc(ax + 16, ay - 48, 6, 0, Math.PI * 2); ctx.fill();
         ctx.fillStyle = "#ffe566";
-        ctx.beginPath(); ctx.arc(bx - 14, by - 62, 3.2, 0, Math.PI * 2); ctx.arc(bx + 14, by - 62, 3.2, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(ax - 16, ay - 48, 3.4, 0, Math.PI * 2); ctx.arc(ax + 16, ay - 48, 3.4, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
         return;
       }
 
@@ -2199,7 +2199,7 @@
     requestAnimationFrame(frame);
   
 
-// ===== TRAIL LANDMARKS (game-c) =====
+// ===== TRAILS / LANDMARKS =====
 
     (function trailPlayFix() {
       /* PLACES already set to full trail in core */
@@ -2475,18 +2475,6 @@
         ctx.restore();
       }
 
-      var rawTheme = biomeTheme;
-      biomeTheme = function() {
-        var b = state.biome || 0;
-        if (b === 5) return { sky0: "#f4a25a", sky1: "#ffd08a", sky2: "#f3e0a8", sun: "#ffcf66", hillA: "#c4b05a", hillB: "#9a8a3a", grass: "#7a9a3a", grassTop: "#c4d46a", dirt: "#6b3a18", night: false };
-        if (b === 6) return { sky0: "#ff9ad2", sky1: "#ffd0f0", sky2: "#ffe8c8", sun: "#ff8ab8", hillA: "#ff9ac8", hillB: "#f07ab0", grass: "#f48cc0", grassTop: "#ffb6d8", dirt: "#c45a8a", night: false };
-        if (b === 7) return { sky0: "#c8e4ff", sky1: "#eef7ff", sky2: "#d8ecff", sun: "#fff6d0", hillA: "#d8e8f4", hillB: "#c0d4e4", grass: "#eef6ff", grassTop: "#ffffff", dirt: "#9ab0c4", night: false };
-        if (b === 8) {
-          return { sky0: "#1a2744", sky1: "#2c3e6b", sky2: "#3d4f7a", sun: "#f4e4a6", hillA: "#2a3d2e", hillB: "#1e2e22", grass: "#2f4a34", grassTop: "#3d5c42", dirt: "#1b1520", night: true };
-        }
-        return rawTheme();
-      };
-
       function drawPumpkinPatch(w, h, gy, scroll) {
         var x = worldX(w, scroll, 760);
         ctx.fillStyle = "#8b5a2b";
@@ -2751,14 +2739,6 @@
         ctx.ellipse = rawEllipse;
       };
 
-      var oldDrawBuddy = drawBuddy;
-      drawBuddy = function(x, gy) {
-        var hop = 0;
-        if (state.buddyHop > 0) hop = Math.sin(Math.min(1, state.buddyHop) * Math.PI) * 18;
-        var bx = state.buddyX != null ? state.buddyX : x;
-        oldDrawBuddy(bx, gy - hop);
-      };
-
       function throwConfetti() {
         var w = (typeof viewW === "function") ? viewW() : 800;
         var h = (typeof viewH === "function") ? viewH() : 500;
@@ -2836,7 +2816,7 @@
     })();
 
 
-// ===== SPACE / EXTRA TRAILS (game-d) =====
+// ===== SPACE LAUNCH =====
 
     (function extraTrailsMenu() {
       /* Keep consolidated PLACES (do not overwrite with short trail). */
@@ -2932,16 +2912,6 @@
           if (b === 9) { drawAsteroid(t, scroll, gy); return; }
           rawDrawTree(t, scroll, gy);
           if (b === 7) drawSnowOnTree(t, scroll, gy);
-        };
-      }
-
-      if (typeof biomeTheme === "function") {
-        var prevTheme = biomeTheme;
-        biomeTheme = function() {
-          if ((state.biome || 0) === 9 || state.launching || (typeof currentPlace === "function" && currentPlace() && currentPlace().id === "space")) {
-            return { sky0: "#050816", sky1: "#10183a", sky2: "#1a1448", sun: "#f4f0c8", hillA: "#141428", hillB: "#1c1c38", grass: "#12122a", grassTop: "#1a1a36", dirt: "#0a0a18", night: true };
-          }
-          return prevTheme();
         };
       }
 
@@ -3292,7 +3262,7 @@
     })();
 
 
-// ===== SPACE SUIT DRAW FIX (game-e) =====
+// ===== SPACE SUIT =====
 
     (function wearTheSuit() {
       function on() {
@@ -3344,7 +3314,7 @@
     })();
 
 
-// ===== POLISH RESTORE (game-f) =====
+// ===== TRAIL POLISH (ctx safety + overlays) =====
 
     (function restoreTrailPolish() {
       if (typeof ctx !== "undefined" && ctx) {
@@ -3377,53 +3347,6 @@
         frame = function(now) {
           try { rawFrame(now); } catch (err) { console.error(err); requestAnimationFrame(frame); }
         };
-      }
-      function drawBuddyProp(bx, by, b, gy) {
-        ctx.save();
-        if (b === 1) {
-          ctx.strokeStyle = "#8b5a2b"; ctx.lineWidth = 3;
-          ctx.beginPath(); ctx.moveTo(bx + 8, by - 20); ctx.lineTo(bx + 2, by - 62); ctx.stroke();
-          ctx.fillStyle = "#e74c3c";
-          ctx.beginPath();
-          ctx.moveTo(bx + 2, by - 62);
-          ctx.quadraticCurveTo(bx - 26, by - 50, bx - 28, by - 38);
-          ctx.lineTo(bx + 2, by - 44);
-          ctx.quadraticCurveTo(bx + 30, by - 50, bx + 32, by - 38);
-          ctx.lineTo(bx + 2, by - 62);
-          ctx.fill();
-        } else if (b === 2) {
-          // Bread lives in the pond only (see drawBreadAndChasingDucks); never attach to kid.
-        } else if (b === 3) {
-          ctx.fillStyle = "#8b5a2b"; ctx.fillRect(bx + 12, by - 36, 4, 28);
-          ctx.fillStyle = "#7f8c8d"; ctx.fillRect(bx + 4, by - 42, 20, 10);
-        } else if (b === 4) {
-          ctx.fillStyle = "#cfd4da"; ctx.fillRect(bx + 6, by - 28, 22, 20); ctx.fillRect(bx + 4, by - 32, 26, 6);
-          ctx.fillStyle = "#2c3e50"; ctx.font = "bold 7px sans-serif"; ctx.textAlign = "center";
-          ctx.fillText("MILK", bx + 17, by - 14);
-        } else if (b === 5) {
-          ctx.fillStyle = "#e67e22";
-          ctx.beginPath(); ctx.ellipse(bx + 18, by - 12, 9, 7, 0, 0, Math.PI * 2); ctx.fill();
-          ctx.fillStyle = "#2e8b3a"; ctx.fillRect(bx + 16, by - 20, 3, 6);
-        } else if (b === 6) {
-          ctx.strokeStyle = "#fff8e7"; ctx.lineWidth = 3;
-          ctx.beginPath(); ctx.moveTo(bx + 14, by - 4); ctx.lineTo(bx + 14, by - 22); ctx.stroke();
-          ctx.fillStyle = "#ff4d8d";
-          ctx.beginPath(); ctx.arc(bx + 14, by - 30, 11, 0, Math.PI * 2); ctx.fill();
-        } else if (b === 7) {
-          ctx.strokeStyle = "#8b5a2b"; ctx.lineWidth = 4;
-          ctx.beginPath(); ctx.moveTo(bx + 14, by - 6); ctx.lineTo(bx + 14, by - 34); ctx.stroke();
-          ctx.fillStyle = "#95a5a6";
-          ctx.beginPath(); ctx.moveTo(bx + 4, by - 34); ctx.lineTo(bx + 24, by - 34); ctx.lineTo(bx + 22, by - 46); ctx.lineTo(bx + 6, by - 46); ctx.fill();
-        } else if (b === 8) {
-          ctx.fillStyle = "rgba(210,240,255,0.45)"; ctx.fillRect(bx + 6, by - 36, 18, 22);
-          ctx.fillStyle = "#7dffb3";
-          var t = state.t || 0;
-          ctx.beginPath();
-          ctx.arc(bx + 12 + Math.sin(t * 7) * 2, by - 24, 2.2, 0, Math.PI * 2);
-          ctx.arc(bx + 18 + Math.cos(t * 8) * 2, by - 28, 1.8, 0, Math.PI * 2);
-          ctx.fill();
-        }
-        ctx.restore();
       }
       function drawHatCrow(cx, cy, flip) {
         ctx.save(); ctx.translate(cx, cy); ctx.scale(flip || 1, 1);
@@ -3497,62 +3420,13 @@
           }
         };
       }
-      if (typeof drawBuddy === "function") {
-        var prev = drawBuddy;
-        drawBuddy = function(x, gy) {
-          var b = state.biome || 0;
-          if (b === 9) {
-            var hover = Math.sin((state.t || 0) * 5) * 6;
-            var rimY = gy - 10 + hover;
-            var keep = state.biome; state.biome = 0; prev(x, rimY + 6); state.biome = keep;
-            ctx.fillStyle = "rgba(90,190,235,0.24)";
-            ctx.beginPath();
-            ctx.moveTo(x - 24, rimY + 2);
-            ctx.quadraticCurveTo(x - 24, rimY - 50, x, rimY - 54);
-            ctx.quadraticCurveTo(x + 24, rimY - 50, x + 24, rimY + 2);
-            ctx.closePath(); ctx.fill();
-            ctx.strokeStyle = "#c5cedd"; ctx.lineWidth = 3; ctx.stroke();
-            ctx.fillStyle = "#8e99ab";
-            ctx.beginPath(); ctx.ellipse(x, rimY + 8, 42, 16, 0, 0, Math.PI * 2); ctx.fill();
-            return;
-          }
-          // Trail buddy is themed per place; skip old hand-prop overlays.
-          prev(x, gy);
-        };
-      }
     })();
 
 
-// ===== SHOP / CREW + HATS =====
+// ===== SHOP / HATS =====
 
     (function shopPatch() {
       if (typeof CATALOG === "undefined") return;
-      var slim = [
-        { id: "fox", name: "Fox", price: 0, emo: "🦊", body: "#ff8a3c", belly: "#ffe0bd", ear: "fox", acc: "none" },
-        { id: "cat", name: "Cat", price: 8, emo: "🐱", body: "#d4a017", belly: "#fff3c4", ear: "cat", acc: "none" },
-        { id: "bunny", name: "Bunny", price: 12, emo: "🐰", body: "#f3f0ea", belly: "#ffffff", ear: "bunny", acc: "none" },
-        { id: "penguin", name: "Penguin", price: 18, emo: "🐧", body: "#2c3340", belly: "#ffffff", ear: "round", acc: "none" },
-        { id: "frog", name: "Frog", price: 22, emo: "🐸", body: "#3cb371", belly: "#d4f5d8", ear: "round", acc: "none", unlock: 8 },
-        { id: "owl", name: "Owl", price: 26, emo: "🦉", body: "#8d6e63", belly: "#ffe0bd", ear: "owl", acc: "none", unlock: 12 },
-        { id: "bear", name: "Bear", price: 30, emo: "🐻", body: "#8d6e63", belly: "#ffe0bd", ear: "bear", acc: "none", unlock: 18 },
-        { id: "robot", name: "Robot", price: 34, emo: "🤖", body: "#6aa8d8", belly: "#d7ecff", ear: "robot", acc: "antenna", unlock: 22 }
-      ];
-      CATALOG.splice(0, CATALOG.length);
-      slim.forEach(function(it) { CATALOG.push(it); });
-
-      window.HATS = [
-        { id: "none", name: "No hat", price: 0, emo: "✨", acc: "none" },
-        { id: "cape", name: "Super Cape", price: 10, emo: "🦸", acc: "cape" },
-        { id: "starcape", name: "Star Cape", price: 14, emo: "🌟", acc: "starcape" },
-        { id: "picnic", name: "Picnic Hat", price: 12, emo: "🧿", acc: "picnic" },
-        { id: "straw", name: "Barn Hat", price: 12, emo: "👒", acc: "straw" },
-        { id: "firefly", name: "Firefly Jar", price: 16, emo: "🫢", acc: "firefly", unlock: 10 },
-        { id: "backpack", name: "Trail Pack", price: 16, emo: "🎒", acc: "backpack" },
-        { id: "wizard", name: "Wizard Hat", price: 20, emo: "🧙", acc: "wizard", unlock: 15 },
-        { id: "ninja", name: "Ninja Mask", price: 20, emo: "🥷", acc: "mask", unlock: 15 },
-        { id: "horn", name: "Magic Horn", price: 22, emo: "🦤", acc: "horn", unlock: 18 },
-        { id: "wings", name: "Trail Wings", price: 28, emo: "🪽", acc: "wings", unlock: 20 }
-      ];
       var OLD_HAT_FROM = {
         cape: "cape", unicorn: "horn", dragon: "wings", wizard: "wizard",
         ninja: "ninja", fairy: "wings", phoenix: "wings", bee: "wings",
@@ -3740,7 +3614,7 @@
     })();
 
 
-// ===== PROPS FIX =====
+// ===== SNOW/PUMPKIN PROPS =====
 
     (function onePropEach() {
       if (typeof drawGround !== "function") return;
@@ -3907,7 +3781,7 @@
     })();
 
 
-// ===== TRAIL POLISH =====
+// ===== POND BREAD / CANDY / BEAM =====
 
     (function trailPolish() {
       function placeId() {
@@ -3915,10 +3789,6 @@
           if (typeof currentPlace === "function" && currentPlace()) return currentPlace().id;
         } catch (e) {}
         return "";
-      }
-      function inSpace() {
-        var b = state.biome || 0;
-        return b === 9 || placeId() === "space" || !!state.launching;
       }
       function candyTrail() {
         return (state.biome || 0) === 6 || placeId() === "candy";
@@ -3930,61 +3800,7 @@
         return (state.biome || 0) === 2 || placeId() === "pond";
       }
 
-      // Jump-only clears: do not add beam / non-jump win moves.
-      if (typeof WIN_MOVES !== "undefined") {
-        var JUMP_ONLY = ["flip", "cartwheel", "bounce"];
-        WIN_MOVES.length = 0;
-        for (var ji = 0; ji < JUMP_ONLY.length; ji++) WIN_MOVES.push(JUMP_ONLY[ji]);
-      }
-
-      function shipX() {
-        return 92;
-      }
-
-      function drawSpaceAlienBuddy(gy) {
-        // Cute floating alien trail buddy (no ship/UFO)
-        var x = shipX();
-        var hover = Math.sin((state.t || 0) * 3.2) * 5;
-        var y = gy - 18 + hover;
-        var glow = 0.55 + Math.sin((state.t || 0) * 4.5) * 0.35;
-        ctx.save();
-        // Soft hover glow / shadow
-        ctx.fillStyle = "rgba(120,220,255,0.2)";
-        ctx.beginPath(); ctx.ellipse(x, y + 28, 16, 5, 0, 0, Math.PI * 2); ctx.fill();
-        // Small body
-        ctx.fillStyle = "#5fd98a";
-        ctx.beginPath(); ctx.ellipse(x, y + 8, 11, 13, 0, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#d4ffe4";
-        ctx.beginPath(); ctx.ellipse(x, y + 10, 6, 7.5, 0, 0, Math.PI * 2); ctx.fill();
-        // Tiny arms
-        ctx.strokeStyle = "#5fd98a";
-        ctx.lineWidth = 3;
-        ctx.lineCap = "round";
-        ctx.beginPath(); ctx.moveTo(x - 9, y + 4); ctx.lineTo(x - 16, y + 12); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(x + 9, y + 4); ctx.lineTo(x + 16, y + 12); ctx.stroke();
-        // Big oval head
-        ctx.fillStyle = "#7dffb3";
-        ctx.beginPath(); ctx.ellipse(x, y - 16, 18, 16, 0, 0, Math.PI * 2); ctx.fill();
-        // Large dark eyes with white highlights
-        ctx.fillStyle = "#1b2a41";
-        ctx.beginPath(); ctx.ellipse(x - 6.5, y - 18, 5.6, 7.8, 0, 0, Math.PI * 2); ctx.ellipse(x + 6.5, y - 18, 5.6, 7.8, 0, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#fff";
-        ctx.beginPath(); ctx.arc(x - 4.8, y - 20.5, 2, 0, Math.PI * 2); ctx.arc(x + 8.2, y - 20.5, 2, 0, Math.PI * 2); ctx.fill();
-        // Tiny smile
-        ctx.strokeStyle = "#2e8b57";
-        ctx.lineWidth = 1.7;
-        ctx.beginPath(); ctx.arc(x, y - 8, 4, 0.15, Math.PI - 0.15); ctx.stroke();
-        // Antennae with glowing tips
-        ctx.strokeStyle = "#5fd98a";
-        ctx.lineWidth = 2.4;
-        ctx.beginPath(); ctx.moveTo(x - 8, y - 28); ctx.quadraticCurveTo(x - 14, y - 40, x - 16, y - 48); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(x + 8, y - 28); ctx.quadraticCurveTo(x + 14, y - 40, x + 16, y - 48); ctx.stroke();
-        ctx.fillStyle = "rgba(255,220,80," + (0.35 + glow * 0.45) + ")";
-        ctx.beginPath(); ctx.arc(x - 16, y - 48, 6, 0, Math.PI * 2); ctx.arc(x + 16, y - 48, 6, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#ffe566";
-        ctx.beginPath(); ctx.arc(x - 16, y - 48, 3.4, 0, Math.PI * 2); ctx.arc(x + 16, y - 48, 3.4, 0, Math.PI * 2); ctx.fill();
-        ctx.restore();
-      }
+      // Jump-only clears (WIN_MOVES set at top).
 
       function wrapPondX(w, scroll) {
         var span = w + 280;
@@ -4056,10 +3872,10 @@
         drawPondDuck(d2, waterY + 2 + Math.sin((state.t || 0) * 2 + 1.1) * 2, -1);
       }
 
+      // Pond bread must stay in the pond — intercept stray kid-held bread fillRects.
       if (typeof drawBuddy === "function") {
         var rawBuddy = drawBuddy;
         drawBuddy = function(x, gy) {
-          if (inSpace()) { drawSpaceAlienBuddy(gy); return; }
           if (!pondTrail()) {
             state.breadToss = null;
             state.breadInPond = false;
@@ -4292,7 +4108,7 @@
     })();
 
 
-// ===== ANIMAL LOOKS =====
+// ===== ANIMAL HEROES =====
 
     (function animalLooks() {
       if (typeof drawHero !== "function") return;
@@ -4788,34 +4604,7 @@
     })();
 
 
-// ===== BIOME SYNC =====
-
-/* daily-trail: fixed place order (no daily shuffle). Sync biome from placeIndex. */
-(function dailyTrail() {
-  function syncBiome() {
-    var p = (typeof currentPlace === "function") ? currentPlace() : (PLACES && PLACES[state.placeIndex || 0]);
-    if (p) state.biome = state.placeIndex % PLACES.length;
-    if (typeof refreshGoal === "function") refreshGoal();
-    var chip = document.getElementById("levelChip");
-    if (chip && p) chip.textContent = p.name;
-  }
-  if (typeof startGame === "function") {
-    var origStart = startGame;
-    startGame = function(fromSave) {
-      var out = origStart(fromSave);
-      syncBiome();
-      return out;
-    };
-  }
-  if (typeof arriveAtNextPlace === "function") {
-    var origArrive = arriveAtNextPlace;
-    arriveAtNextPlace = function() {
-      origArrive();
-      syncBiome();
-    };
-  }
-  syncBiome();
-})();
+/* Biome sync folded into startGame / arriveAtNextPlace (placeIndex drives biome). */
 
 
 // ===== SPACE SKY =====
@@ -4980,14 +4769,10 @@
 })();
 
 
-// ===== WIN BEATS =====
+// ===== WIN BEATS (jump-only) =====
 
     (function winBeat() {
-      var MOVES = ["flip", "cartwheel", "bounce"]; // jump-only
-      if (typeof WIN_MOVES !== "undefined") {
-        WIN_MOVES.length = 0;
-        for (var i = 0; i < MOVES.length; i++) WIN_MOVES.push(MOVES[i]);
-      }
+      var MOVES = ["flip", "cartwheel", "bounce"]; // jump-only (matches WIN_MOVES)
 
       function gateDist() {
         if (!state.gate) return 9999;
@@ -5113,7 +4898,7 @@
 
 
 
-// ===== PILOT LINK GATE =====
+// ===== PILOT / ADMIN GATE =====
 (function pilotLinkGate() {
   function parseUntil(raw) {
     if (!raw) return null;
@@ -5180,26 +4965,3 @@
   });
 })();
 
-// ===== CONSOLIDATION FOOTER =====
-
-(function consolidateFooter() {
-  // Reaffirm final place list goals (idempotent).
-  var FINAL = [
-    { id: "hills", name: "Sunny Hills", goal: "Picnic Spot", arrive: "You made it to the picnic!" },
-    { id: "picnic", name: "Picnic Spot", goal: "Duck Pond", arrive: "Picnic time!" },
-    { id: "pond", name: "Duck Pond", goal: "Treehouse", arrive: "The ducks say hi!" },
-    { id: "treehouse", name: "Treehouse", goal: "Red Barn", arrive: "Up in the treehouse!" },
-    { id: "barn", name: "Red Barn", goal: "Pumpkin Patch", arrive: "The red barn!" },
-    { id: "pumpkin", name: "Pumpkin Patch", goal: "Candy Trail", arrive: "Pumpkins everywhere!" },
-    { id: "candy", name: "Candy Trail", goal: "Snowy Hill", arrive: "Sweet candy trail!" },
-    { id: "snow", name: "Snowy Hill", goal: "Firefly Night", arrive: "Snow day!" },
-    { id: "night", name: "Firefly Night", goal: "Outer Space", arrive: "Fireflies!" },
-    { id: "space", name: "Outer Space", goal: "Sunny Hills", arrive: "Blast off!" }
-  ];
-  if (typeof PLACES !== "undefined") {
-    PLACES.splice(0, PLACES.length);
-    for (var i = 0; i < FINAL.length; i++) PLACES.push(FINAL[i]);
-  }
-  if (typeof refreshGoal === "function") refreshGoal();
-  if (typeof updateHud === "function") updateHud();
-})();
