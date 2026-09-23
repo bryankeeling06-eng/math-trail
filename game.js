@@ -97,6 +97,8 @@
       { id: "space", name: "Outer Space", goal: "Sunny Hills", arrive: "Blast off!" }
     ];
     var WIN_MOVES = ["flip", "cartwheel", "bounce"]; // jump-only gate clears
+    var adminRequestedPlaceIndex = null;
+    var adminStartPlaceIndex = null;
 
     function rand(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
     function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
@@ -437,10 +439,10 @@
       state.bonusTime = 0;
       state.paused = false;
       if (!fromSave) {
-        state.placeIndex = 0;
+        state.placeIndex = state.admin && adminStartPlaceIndex !== null ? adminStartPlaceIndex : 0;
         state.stones = 0;
         state.arriving = 0;
-        state.biome = 0;
+        state.biome = state.placeIndex;
         state.runStamps = [];
       } else {
         state.placeIndex = data.placeIndex || 0;
@@ -861,8 +863,48 @@
       refreshStarBank();
     }
 
+    function showAdminTrailPicker() {
+      if (!state.admin || document.getElementById("adminTrailPicker")) return;
+      var picker = document.createElement("div");
+      picker.id = "adminTrailPicker";
+      picker.style.cssText = "margin:12px 0 4px;padding:10px;border:3px solid #ffb347;border-radius:16px;background:#fff8ed;text-align:left";
+      var title = document.createElement("div");
+      title.textContent = "ADMIN · Choose a trail";
+      title.style.cssText = "font-weight:900;font-size:16px;margin-bottom:7px;text-align:center;color:#7a4b00";
+      picker.appendChild(title);
+      var grid = document.createElement("div");
+      grid.style.cssText = "display:grid;grid-template-columns:1fr 1fr;gap:6px";
+      PLACES.forEach(function(place, i) {
+        var button = document.createElement("button");
+        button.type = "button";
+        button.textContent = (i + 1) + ". " + place.name;
+        button.style.cssText = "border:2px solid #f0c27b;border-radius:10px;background:#fff;padding:7px 5px;cursor:pointer;font-family:inherit;font-weight:800;font-size:13px;color:#5a3a00";
+        button.addEventListener("click", function() {
+          adminStartPlaceIndex = i;
+          startGame(false);
+        });
+        grid.appendChild(button);
+      });
+      picker.appendChild(grid);
+      var startButton = document.getElementById("startBtn");
+      if (startButton && startButton.parentNode === menu) menu.insertBefore(picker, startButton);
+      else menu.appendChild(picker);
+    }
+
     (function bootSave() {
       state.admin = /(?:\?|&)admin=1(?:&|$)/.test(location.search) || location.hash === "#admin";
+      if (state.admin) {
+        try {
+          var adminParams = new URLSearchParams(location.search || "");
+          var requestedPlace = adminParams.get("place") || adminParams.get("trail");
+          for (var i = 0; i < PLACES.length; i++) {
+            if (requestedPlace && PLACES[i].id === requestedPlace) {
+              adminRequestedPlaceIndex = i;
+              break;
+            }
+          }
+        } catch (e) {}
+      }
       var data = loadSave();
       if (data && typeof data.stars === "number") state.stars = data.stars;
       if (data && data.character) state.character = data.character;
@@ -898,8 +940,14 @@
       refreshStarBank();
       if (state.admin) {
         var tag = document.querySelector(".menu .tag");
-        if (tag) tag.textContent = "ADMIN preview · all costumes unlocked";
-        setTimeout(openShop, 80);
+        if (tag) tag.textContent = "ADMIN preview · choose any trail";
+        setTimeout(function() {
+          showAdminTrailPicker();
+          if (adminRequestedPlaceIndex !== null) {
+            adminStartPlaceIndex = adminRequestedPlaceIndex;
+            startGame(false);
+          }
+        }, 80);
       }
     })();
     answersEl.querySelectorAll(".ans").forEach(function(btn) {
